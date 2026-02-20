@@ -5,7 +5,7 @@ import cuentas.Transferencia;
 public class Cliente {
 
     private Cuenta cuentaCorriente, cajaAhorroPesos, cajaAhorroDolares;
-    private String nombre, apellido, dni;
+    private String nombre, apellido, dni, alias;
     private int edad;
 
     public Cliente(String nombre, String apellido, String dni, int edad) {
@@ -17,6 +17,10 @@ public class Cliente {
 
     public String getDni() {
         return this.dni;
+    }
+
+    public String getAlias() {
+        return this.alias;
     }
 
     public String toString() {
@@ -58,4 +62,5 @@ public class Cliente {
             case CUENTA_03 -> this.cajaAhorroDolares;
         };
     }
+
 }

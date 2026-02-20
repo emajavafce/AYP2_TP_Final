@@ -2,9 +2,9 @@ import java.util.*;
 
 public class Banco {
 
-    private Set<String> aliasUsados;
-    private Map<String, Cliente> aliasCliente;
-    private Map<String, Cliente> dniCliente;
+    private final Set<String> aliasUsados;
+    private final Map<String, Cliente> aliasCliente;
+    private final Map<String, Cliente> dniCliente;
 
     public Banco() {
         this.aliasUsados = new HashSet<>();
@@ -14,22 +14,31 @@ public class Banco {
 
     public void agregarCliente(Cliente cliente) {
         String alias = this.generarAlias();
+        this.aliasUsados.add(alias);
         this.aliasCliente.put(alias, cliente);
         this.dniCliente.put(cliente.getDni(), cliente);
     }
 
     public void listarClientes() {
-        for (String alias : this.clientes.keySet()) {
-            System.out.println("\t"+ this.clientes.get(alias).toString());
+        for (String dni : this.dniCliente.keySet()) {
+            System.out.println(this.dniCliente.get(dni));
         }
     }
 
-    public void eliminarCliente(String alias) {
-        if (this.clientes.remove(alias) == null) {
-            System.out.println("[ERROR] No existe el cliente que se quiere eliminar");
-        } else{
-            this.aliasUsados.remove(alias);
-        }
+    public void eliminarCliente(String dni) {
+        Cliente cliente = this.dniCliente.get(dni);
+        this.dniCliente.remove(dni);
+        this.aliasUsados.remove(cliente.getAlias());
+        this.aliasCliente.remove(cliente.getAlias());
+        System.out.println("[INFO] Cliente eliminado correctamente");
+    }
+
+    public boolean existeCliente(String dni) {
+        return this.dniCliente.containsKey(dni);
+    }
+
+    public Cliente buscarCliente(String dni) {
+        return this.dniCliente.get(dni);
     }
 
     public String generarAlias() {
@@ -37,7 +46,6 @@ public class Banco {
         String alias;
         do {
             StringBuilder sb = new StringBuilder();
-
             for (int i = 0; i < 3; i++) {
                 int j = getNumAleatorio(palabras.length);
                 sb.append(palabras[j]);
@@ -45,9 +53,7 @@ public class Banco {
                     sb.append(".");
                 }
             }
-
             alias = sb.toString();
-
         } while (!aliasCorrecto(alias));
         aliasUsados.add(alias);
         return alias;
@@ -57,7 +63,12 @@ public class Banco {
         return !this.aliasUsados.contains(alias) && alias.length() <= 20;
     }
 
+    public boolean hayClientesRegistrados() {
+        return !this.dniCliente.isEmpty();
+    }
+
     private int getNumAleatorio(int max) {
         return (int) (Math.random() * max);
     }
+
 }

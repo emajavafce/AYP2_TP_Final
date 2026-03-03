@@ -1,22 +1,24 @@
 import java.util.Scanner;
 
-public class Aplicacion {
+public class MenuBanco {
 
-    private final Scanner scn;
+    private final Scanner scanner;
     private final Banco banco;
+    private final DispensadorDinero dispensador;
 
-    public Aplicacion() {
-        this.scn = new Scanner(System.in);
-        this.banco = new Banco();
+    public MenuBanco(Scanner scanner, Banco banco, DispensadorDinero dispensador) {
+        this.scanner = scanner;
+        this.banco = banco;
+        this.dispensador = dispensador;
     }
 
-    public void run() {
+    public void ejecutar() {
         int opcion = 0;
         String menu = " --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir";
         while (opcion != 5) {
             System.out.println(menu);
             System.out.print("Ingrese su opcion: ");
-            opcion = Integer.parseInt(this.scn.nextLine());
+            opcion = Integer.parseInt(this.scanner.nextLine());
             switch (opcion) {
                 case 1:
                     this.agregarCliente();
@@ -31,7 +33,7 @@ public class Aplicacion {
                     this.eliminarCliente();
                     break;
                 case 5:
-                    this.scn.close();
+                    this.scanner.close();
                     System.out.println("[INFO] Saliendo del programa");
                     break;
                 default:
@@ -42,7 +44,7 @@ public class Aplicacion {
 
     private void agregarCliente() {
         String dni = this.pedirDni();
-        if (!dniCorrecto(dni)) {
+        if (!Verificador.dniCorrecto(dni)) {
             System.out.println("[ERROR] El DNI ingresado es incorrecto");
             return;
         }
@@ -51,18 +53,18 @@ public class Aplicacion {
             return;
         }
         System.out.print("Ingrese el nombre: ");
-        String nombre = this.scn.nextLine();
+        String nombre = this.scanner.nextLine();
         System.out.print("Ingrese el apellido: ");
-        String apellido = this.scn.nextLine();
+        String apellido = this.scanner.nextLine();
         System.out.print("Ingrese la edad: ");
         int edad;
         try {
-            edad = Integer.parseInt(this.scn.nextLine());
+            edad = Integer.parseInt(this.scanner.nextLine());
         } catch (NumberFormatException ex) {
             System.out.println("[ERROR] La edad debe ser un numero");
             return;
         }
-        boolean datosCorrectos = this.nombreApellidoCorrectos(nombre, apellido) && this.edadCorrecta(edad);
+        boolean datosCorrectos = Verificador.nombreApellidoCorrectos(nombre, apellido) && Verificador.edadCorrecta(edad);
         if (datosCorrectos) {
             Cliente cliente = new Cliente(nombre, apellido, dni, edad);
             this.banco.agregarCliente(cliente);
@@ -83,7 +85,7 @@ public class Aplicacion {
 
     private void buscarCliente() {
         String dni = this.pedirDni();
-        if (!this.dniCorrecto(dni)) {
+        if (!Verificador.dniCorrecto(dni)) {
             System.out.println("[ERROR] El DNI ingresado es incorrecto");
             return;
         }
@@ -104,22 +106,12 @@ public class Aplicacion {
         this.banco.eliminarCliente(dni);
     }
 
-
-    private boolean nombreApellidoCorrectos(String nombre, String apellido) {
-        String patron = "^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(\\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$";
-        return nombre.matches(patron) && apellido.matches(patron);
-    }
-
-    private boolean dniCorrecto(String dni) {
-        return dni.matches("^\\d{7,8}$");
-    }
-
     private boolean edadCorrecta(int edad) {
         return edad >= 16 && edad <= 120;
     }
 
     private String pedirDni() {
         System.out.print("Ingrese el DNI: ");
-        return this.scn.nextLine();
+        return this.scanner.nextLine();
     }
 }

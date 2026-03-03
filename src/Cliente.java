@@ -31,8 +31,12 @@ public class Cliente {
         return this.toString();
     }
 
-    public void retirarEfectivo(double monto, TipoCuenta tipo) {
-        obtenerCuenta(tipo).disminuirSaldo(monto);
+    //public void retirarEfectivo(Cuenta cuenta, double monto) {
+    //obtenerCuenta(tipo).disminuirSaldo(monto);
+    //}
+
+    public void retirarEfectivo(Cuenta cuenta, double monto) {
+        cuenta.disminuirSaldo(monto);
     }
 
     public void comprarDolares(double monto) {
@@ -61,6 +65,18 @@ public class Cliente {
             case CUENTA_02 -> this.cajaAhorroPesos;
             case CUENTA_03 -> this.cajaAhorroDolares;
         };
+    }
+
+    public Cuenta getCuentaCorriente() {
+        return this.cuentaCorriente;
+    }
+
+    public Cuenta getCajaAhorroPesos() {
+        return this.cajaAhorroPesos;
+    }
+
+    public Cuenta getCajaAhorroDolares() {
+        return this.cajaAhorroDolares;
     }
 
 }

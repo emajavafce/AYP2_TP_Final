@@ -8,7 +8,7 @@ import java.util.List;
 public class Pruebas {
 
     public static void main(String[] args) {
-        Aplicacion ap = new Aplicacion();
-        ap.run();
+        CajeroATM c = new CajeroATM();
+        c.menuIngreso();
     }
 }

@@ -37,7 +37,7 @@ public class Banco {
         return this.dniCliente.containsKey(dni);
     }
 
-    public Cliente buscarCliente(String dni) {
+    public Cliente buscarCliente(String dni){
         return this.dniCliente.get(dni);
     }
 

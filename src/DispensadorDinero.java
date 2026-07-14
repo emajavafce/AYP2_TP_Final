@@ -4,26 +4,25 @@ import excepciones.SinStockBilletesEx;
 public class DispensadorDinero {
 
     private final Billete[] billetesEnStock;
-    private final int[] denominaciones = {100, 500, 1000};
+    private static final int[] DENOMINACIONES = {100, 500, 1000};
 
     public DispensadorDinero() {
         this.billetesEnStock = new Billete[3];
         this.instanciarObjetos();
-        this.recargarStockBilletes();
     }
 
-    /**
-     * Se instancian los objetos, de tipo Billete, de cada indice
+    /*
+     Se instancian los objetos, de tipo Billete, de cada indice
      */
     private void instanciarObjetos() {
-        for (int i = 0; i < denominaciones.length; i++) {
-            billetesEnStock[i] = new Billete(denominaciones[i], 500);
+        for (int i = 0; i < 3; i++) {
+            billetesEnStock[i] = new Billete(this.DENOMINACIONES[i], 500);
         }
     }
 
-    /**
-     * Recarga diariamente el stock de billetes de cada denominacion.
-     * Le asigna una cantidad de 500 unidades para cada uno.
+    /*
+     Recarga diariamente el stock de billetes de cada denominacion.
+     Le asigna una cantidad de 500 unidades para cada uno.
      */
     private void recargarStockBilletes() {
         for (Billete billete : this.billetesEnStock) {
@@ -31,92 +30,75 @@ public class DispensadorDinero {
         }
     }
 
-    /**
-     * Descuenta del stock de billetes la cantidad extraida
-     *
-     * @param denominacion
-     * @param cantidadParaExtraer
+    /*
+     Descuenta del stock de billetes la cantidad extraida
      */
-    private void descontarDelStock(int denominacion, int cantidadParaExtraer) {
-        int i = this.getIndiceSegunDenominacion(denominacion);
-        int nuevaCantidad = this.billetesEnStock[i].getCantidad() - cantidadParaExtraer;
-        this.billetesEnStock[i].setCantidad(nuevaCantidad);
+    private void descontarDelStock(Billete[] billetesEntregados) {
+        int cantBilletes;
+        for (int i = 0; i < 3; i++) {
+            cantBilletes = this.billetesEnStock[i].getCantidad() - billetesEntregados[i].getCantidad();
+            this.billetesEnStock[i].setCantidad(cantBilletes);
+        }
     }
 
-    /**
-     * Se obtiene el indice segun la demonimacion del billete
-     *
-     * @param denominacion
-     * @return
+    /*
+     Se obtiene el indice segun la demonimacion del billete
      */
     private int getIndiceSegunDenominacion(int denominacion) {
-        int i = -1;
-        for (int j = 0; j < denominaciones.length; j++) {
-            if (denominaciones[j] == denominacion) {
-                i = j;
-            }
+        switch (denominacion) {
+            case 100:
+                return 0;
+            case 500:
+                return 1;
+            case 1000:
+                return 2;
+            default:
+                return -1;
         }
-        return i;
     }
 
-    public boolean todaviaHayStockBilletes(double montoParaRetirar) {
-        int montoDisponible = 0;
-
-        for (Billete billete : billetesEnStock) {
-            montoDisponible += billete.getCantidad() * billete.getDenominacion();
-        }
-
-        return montoDisponible >= montoParaRetirar;
-    }
-
-    /**
-     * Simula el funcionamiento de un cajero automatico al entregar dinero.
-     * Los montos solicitados solo puede ser entregados en billetes de 1000, 500 y 100;
+    /*
+    Verifica si el cajero puede entregar el monto solicitado
      */
-    public Billete[] entregarBilletes(double montoParaRetirar) {
+    public boolean hayStockSuficiente(double montoParaRetirar) {
+        int montoStock = 0;
+        for (Billete billete : this.billetesEnStock) {
+            montoStock += billete.getCantidad() * billete.getDenominacion();
+        }
+        return montoStock >= montoParaRetirar;
+    }
 
-        Billete[] billetesParaEntregar = new Billete[3];
-        double montoRestante = montoParaRetirar;
+    /*
+     Simula el funcionamiento de un cajero automatico al entregar dinero.
+     Los montos solicitados solo puede ser entregados en billetes de 1000, 500 y 100;
+     */
+    public Billete[] entregarBilletes(int montoParaRetirar) {
+        Billete[] billetesParaEntregar = new Billete[DENOMINACIONES.length];
 
-        for (int i = 2; i >= 0; i--) {
+        int montoRestante = montoParaRetirar;
 
-            int denominacion = denominaciones[i];
+        for (int i = DENOMINACIONES.length - 1; i >= 0; i--) {
+            int denominacion = DENOMINACIONES[i];
             int cantidadDisponible = billetesEnStock[i].getCantidad();
 
-            int cantidadNecesaria = (int) montoRestante / denominacion;
+            int cantidadNecesaria = montoRestante / denominacion;
             int cantidadAEntregar = Math.min(cantidadNecesaria, cantidadDisponible);
 
-            if (cantidadAEntregar > 0) {
-                billetesParaEntregar[i] = new Billete(denominacion, cantidadAEntregar);
-                descontarDelStock(denominacion, cantidadAEntregar);
-                montoRestante -= cantidadAEntregar * denominacion;
-            } else {
-                billetesParaEntregar[i] = new Billete(denominacion, 0);
-            }
-        }
+            billetesParaEntregar[i] = new Billete(denominacion, cantidadAEntregar);
 
+            montoRestante -= cantidadAEntregar * denominacion;
+        }
+        descontarDelStock(billetesParaEntregar);
         return billetesParaEntregar;
     }
 
-    /**
-     * Muestra la cantidad de billetes disponibles para cada denominacion
+    /*
+     Muestra la cantidad de billetes disponibles para cada denominacion
      */
     public void mostrarStockActualDeBilletes() {
         for (Billete billete : this.billetesEnStock) {
-            System.out.println("Billetes de $" + billete.getDenominacion() + " : " + billete.getCantidad() + " unidades disponibles");
+            System.out.println("Billetes de $" + billete.getDenominacion() + " -> " + billete.getCantidad() + " unidades disponibles");
         }
-    }
-
-    public static void main(String[] args) {
-        DispensadorDinero d = new DispensadorDinero();
-        double montoParaRetirar = 780000;
-        Billete[] billetesEntregados = d.entregarBilletes(montoParaRetirar);
-        System.out.println("Para $" + montoParaRetirar + " se entrego una cantidad de:");
-        for (Billete billete : billetesEntregados) {
-            System.out.println("\t" + billete.getCantidad() + " billetes de $ " + billete.getDenominacion());
-        }
-        d.mostrarStockActualDeBilletes();
-        System.out.println(d.todaviaHayStockBilletes(20100));
     }
 
 }

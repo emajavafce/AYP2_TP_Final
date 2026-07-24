@@ -4,12 +4,14 @@ import java.util.Scanner;
 
 public class MenuClientes {
 
-    private Scanner scanner;
     private Cliente cliente;
+    private DispensadorDinero dispensador;
+    private Scanner scanner;
 
-    public MenuClientes(Scanner scanner, Cliente cliente) {
-        this.scanner = scanner;
+    public MenuClientes(Cliente cliente, DispensadorDinero dispensador, Scanner scanner) {
         this.cliente = cliente;
+        this.dispensador = dispensador;
+        this.scanner = scanner;
     }
 
     public void ejecutar() {
@@ -76,8 +78,10 @@ public class MenuClientes {
         double monto = Double.parseDouble(this.scanner.nextLine());
         if (!Verificador.montoCorrecto(monto)) {
             System.out.println("[ERROR] El monto solicitado es incorrecto");
+        } else if (!this.dispensador.hayStockSuficiente(monto)) {
+            System.out.println("[ERROR] El monto solicitado supera al disponible en el cajero");
         } else {
-            this.dispensador.
+            this.dispensador.entregarBilletes((int) monto);
             this.cliente.retirarEfectivo(cuenta, monto);
             System.out.println("El dinero ha sido retirado");
         }

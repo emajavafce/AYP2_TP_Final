@@ -2,14 +2,14 @@ import java.util.Scanner;
 
 public class MenuBanco {
 
-    private final Scanner scanner;
     private final Banco banco;
     private final DispensadorDinero dispensador;
+    private final Scanner scanner;
 
-    public MenuBanco(Scanner scanner, Banco banco, DispensadorDinero dispensador) {
-        this.scanner = scanner;
+    public MenuBanco(Banco banco, DispensadorDinero dispensador, Scanner scanner) {
         this.banco = banco;
         this.dispensador = dispensador;
+        this.scanner = scanner;
     }
 
     public void ejecutar() {

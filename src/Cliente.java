@@ -23,6 +23,10 @@ public class Cliente {
         return this.alias;
     }
 
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
     public String toString() {
         return String.format("Nombre: %s - Apellido: %s - DNI: %s - Edad: %d años", this.nombre, this.apellido, this.dni, this.edad);
     }

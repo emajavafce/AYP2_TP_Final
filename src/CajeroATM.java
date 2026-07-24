@@ -25,20 +25,23 @@ public class CajeroATM {
             switch (opcion) {
                 case 1:
                     String dni = this.pedirDni();
+                    if (dni == null) {
+                        System.out.println("[ERROR] El formato del DNI ingresado es incorrecto");
+                        break;
+                    }
                     Cliente cliente = this.banco.buscarCliente(dni);
                     if (cliente == null) {
                         System.out.println("[ERROR] No existe el cliente");
-                    } else {
-                        new MenuClientes(this.scanner, cliente);
+                        break;
                     }
+                    new MenuClientes(cliente, this.dispensador, this.scanner);
                     break;
                 case 2:
-                    new MenuBanco(this.scanner, this.banco, this.dispensador);
+                    new MenuBanco(this.banco, this.dispensador, this.scanner);
                     break;
-
                 case 3:
-                    this.scanner.close();
                     System.out.println("[INFO] Saliendo...");
+                    this.scanner.close();
                     break;
                 default:
                     System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente");
@@ -47,17 +50,14 @@ public class CajeroATM {
         }
     }
 
+    /*
+    Solicita el DNI y verifica que lo ingresado tenga el formato correcto
+     */
     public String pedirDni() {
-        while (true) {
-            System.out.print("Ingrese su DNI: ");
-            String dni = this.scanner.nextLine();
-            if (Verificador.dniCorrecto(dni)) {
-                return dni;
-            }
-            System.out.println("[ERROR] El formato del DNI ingresado es incorrecto");
-        }
+        System.out.print("Ingrese su DNI: ");
+        String dni = this.scanner.nextLine();
+        return Verificador.dniCorrecto(dni) ? dni : null;
     }
-
 
     private Cuenta elegirTipoCuenta() {
         System.out.println("Elija el tipo de cuenta:\n1-Cuenta corriente\n2-Caja de ahorro en pesos\n3-Caja de ahorro en dolares");
@@ -65,7 +65,7 @@ public class CajeroATM {
         return null;
     }
 
-    public void retirarEfectivo(double montoParaRetirar) {
+    public void retirarEfectivo(int montoParaRetirar) {
         this.dispensador.entregarBilletes(montoParaRetirar);
     }
 

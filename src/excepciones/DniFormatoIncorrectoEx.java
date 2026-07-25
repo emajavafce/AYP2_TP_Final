@@ -1,8 +1,8 @@
 package excepciones;
 
-public class DNIFormatoIncorrectoEx extends Exception{
+public class DniFormatoIncorrectoEx extends Exception{
 
-    public DNIFormatoIncorrectoEx(){
+    public DniFormatoIncorrectoEx(){
         super("[ERROR] El formato del DNI ingresado no es correcto");
     }
 }

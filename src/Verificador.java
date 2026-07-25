@@ -9,10 +9,6 @@ public class Verificador {
         return dni.matches("^\\d{7,8}$");
     }
 
-    public static boolean edadCorrecta(int edad) {
-        return edad >= 16 && edad <= 120;
-    }
-
     public static boolean montoCorrecto(double monto) {
         return monto >= 0;
     }

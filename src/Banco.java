@@ -47,7 +47,7 @@ public class Banco {
             throw new NoHayClientesCargadosEx();
         }
         for (Cliente cliente : this.dniCliente.values()) {
-            System.out.println(cliente);
+            System.out.println(cliente.mostrarDatosPersonales());
         }
     }
 

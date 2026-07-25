@@ -1,3 +1,5 @@
+import excepciones.*;
+
 import java.util.Scanner;
 
 public class MenuBanco {
@@ -12,7 +14,7 @@ public class MenuBanco {
         this.scanner = scanner;
     }
 
-    public void ejecutar() {
+    public void ejecutar() throws Exception {
         int opcion = 0;
         String menu = " --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir";
         while (opcion != 5) {
@@ -22,15 +24,19 @@ public class MenuBanco {
             switch (opcion) {
                 case 1:
                     this.agregarCliente();
+                    System.out.println("[INFO] El cliente ha sido agregado correctamente!");
                     break;
                 case 2:
+                    System.out.println("Clientes registrados:");
                     this.listarClientes();
                     break;
                 case 3:
-                    this.buscarCliente();
+                    Cliente cliente = this.buscarCliente();
+                    System.out.println(cliente);
                     break;
                 case 4:
                     this.eliminarCliente();
+                    System.out.println("[INFO] El cliente ha sido eliminado!");
                     break;
                 case 5:
                     this.scanner.close();
@@ -42,76 +48,110 @@ public class MenuBanco {
         }
     }
 
-    private void agregarCliente() {
-        String dni = this.pedirDni();
+    /**
+     * Se solicita el DNI al cliente
+     *
+     * @return
+     * @throws DniFormatoIncorrectoEx
+     */
+    private String pedirDni() throws DniFormatoIncorrectoEx {
+        System.out.print("Ingrese el DNI: ");
+        String dni = this.scanner.nextLine();
         if (!Verificador.dniCorrecto(dni)) {
-            System.out.println("[ERROR] El DNI ingresado es incorrecto");
-            return;
+            throw new DniFormatoIncorrectoEx();
         }
-        if (this.banco.existeCliente(dni)) {
-            System.out.println("[ERROR] Ya existe un cliente registrado con ese DNI");
-            return;
-        }
+        return dni;
+    }
+
+    /**
+     * Solicita el nombre y apellido del cliente
+     *
+     * @throws FormatoNombreApellidoIncorrectoEx Si el nombre o apellido tiene un formato erroneo
+     */
+    private String[] pedirNombreApellido() throws FormatoNombreApellidoIncorrectoEx {
         System.out.print("Ingrese el nombre: ");
         String nombre = this.scanner.nextLine();
         System.out.print("Ingrese el apellido: ");
         String apellido = this.scanner.nextLine();
-        System.out.print("Ingrese la edad: ");
+        if (!Verificador.nombreApellidoCorrectos(nombre, apellido)) {
+            throw new FormatoNombreApellidoIncorrectoEx();
+        }
+        String[] datos = {nombre, apellido};
+        return datos;
+    }
+
+    /**
+     * Se solicita la edad del cliente. Debe tener mas de 15 años y menos de 121
+     *
+     * @throws FormatoEdadIncorrectoEx
+     * @throws EdadIncorrectaEx
+     */
+    private int pedirEdad() throws FormatoEdadIncorrectoEx, EdadIncorrectaEx {
         int edad;
         try {
             edad = Integer.parseInt(this.scanner.nextLine());
         } catch (NumberFormatException ex) {
-            System.out.println("[ERROR] La edad debe ser un numero");
-            return;
+            throw new FormatoEdadIncorrectoEx();
         }
-        boolean datosCorrectos = Verificador.nombreApellidoCorrectos(nombre, apellido) && Verificador.edadCorrecta(edad);
-        if (datosCorrectos) {
-            Cliente cliente = new Cliente(nombre, apellido, dni, edad);
-            this.banco.agregarCliente(cliente);
-            System.out.println("[INFO] El cliente ha sido agregado");
-        } else {
-            System.out.println("[ERROR] Uno o varios de los datos ingresados son incorrectos");
+        if (edad < 16 || edad > 120) {
+            throw new EdadIncorrectaEx();
         }
+        return edad;
     }
 
-    private void listarClientes() {
-        if (!this.banco.hayClientesRegistrados()) {
-            System.out.println("[INFO] No hay clientes registrados por el momento");
-            return;
+    /**
+     * Agrega un cliente al registro del Banco
+     *
+     * @throws DniFormatoIncorrectoEx
+     * @throws ClienteYaRegistradoEx
+     * @throws CantMaxAliasSuperadaEx
+     * @throws FormatoEdadIncorrectoEx
+     * @throws EdadIncorrectaEx
+     * @throws FormatoNombreApellidoIncorrectoEx
+     */
+    private void agregarCliente() throws DniFormatoIncorrectoEx, ClienteYaRegistradoEx, CantMaxAliasSuperadaEx, FormatoEdadIncorrectoEx, EdadIncorrectaEx, FormatoNombreApellidoIncorrectoEx {
+        String dni = this.pedirDni();
+        if (this.banco.existeCliente(dni)) {
+            throw new ClienteYaRegistradoEx();
         }
-        System.out.println("Clientes registrados:");
+        String[] datos = this.pedirNombreApellido();
+        String nombre = datos[0];
+        String apellido = datos[1];
+        int edad = this.pedirEdad();
+        this.banco.agregarCliente(new Cliente(nombre, apellido, dni, edad));
+    }
+
+    /**
+     * Muestra todos los clientes registrados hasta el momento
+     *
+     * @throws NoHayClientesCargadosEx
+     */
+    private void listarClientes() throws NoHayClientesCargadosEx {
         this.banco.listarClientes();
     }
 
-    private void buscarCliente() {
+    /**
+     * Busca un cliente dentro de los registro del Banco
+     *
+     * @return
+     * @throws DniFormatoIncorrectoEx
+     * @throws NoExisteClienteEx
+     */
+    private Cliente buscarCliente() throws DniFormatoIncorrectoEx, NoExisteClienteEx {
         String dni = this.pedirDni();
-        if (!Verificador.dniCorrecto(dni)) {
-            System.out.println("[ERROR] El DNI ingresado es incorrecto");
-            return;
-        }
-        if (!this.banco.existeCliente(dni)) {
-            System.out.println("[INFO] No existe cliente con ese DNI");
-            return;
-        }
-        Cliente cliente = this.banco.buscarCliente(dni);
-        System.out.println(cliente);
+        return this.banco.buscarCliente(dni);
     }
 
-    private void eliminarCliente() {
+    /**
+     * Elimina un cliente de los registros del Banco
+     *
+     * @throws DniFormatoIncorrectoEx
+     * @throws NoExisteClienteEx
+     */
+    private void eliminarCliente() throws DniFormatoIncorrectoEx, NoExisteClienteEx {
         String dni = this.pedirDni();
-        if (!this.banco.existeCliente(dni)) {
-            System.out.println("[ERROR] No existe cliente con ese DNI");
-            return;
-        }
         this.banco.eliminarCliente(dni);
     }
 
-    private boolean edadCorrecta(int edad) {
-        return edad >= 16 && edad <= 120;
-    }
 
-    private String pedirDni() {
-        System.out.print("Ingrese el DNI: ");
-        return this.scanner.nextLine();
-    }
 }

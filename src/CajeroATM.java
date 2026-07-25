@@ -1,5 +1,4 @@
 import cuentas.Cuenta;
-import excepciones.DNIFormatoIncorrectoEx;
 import excepciones.NoExisteClienteEx;
 
 import java.util.Scanner;
@@ -16,7 +15,7 @@ public class CajeroATM {
         this.banco = new Banco();
     }
 
-    public void menuIngreso() {
+    public void menuIngreso() throws NoExisteClienteEx {
         int opcion = 0;
         while (opcion != 3) {
             System.out.println("--Menu del cajero ATM--\n1-Ingresar como cliente\n2-Ingresar como Banco\n3-Salir");
@@ -59,6 +58,9 @@ public class CajeroATM {
         return Verificador.dniCorrecto(dni) ? dni : null;
     }
 
+    /*
+    Solicita al cliente que eliga el tipo de cuenta que va utilizar
+     */
     private Cuenta elegirTipoCuenta() {
         System.out.println("Elija el tipo de cuenta:\n1-Cuenta corriente\n2-Caja de ahorro en pesos\n3-Caja de ahorro en dolares");
         int opcion = Integer.parseInt(this.scanner.nextLine());

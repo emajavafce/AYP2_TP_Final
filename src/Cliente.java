@@ -1,6 +1,9 @@
 import cuentas.Cuenta;
 import cuentas.TipoCuenta;
 import cuentas.Transferencia;
+import excepciones.MontoIncorrectoEx;
+import excepciones.MontoSuperiorAlDisponibleEx;
+import excepciones.ObjetoNuloEx;
 
 public class Cliente {
 
@@ -15,35 +18,25 @@ public class Cliente {
         this.edad = edad;
     }
 
-    public String getDni() {
-        return this.dni;
-    }
-
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public String toString() {
+    public String mostrarDatosPersonales() {
         return String.format("Nombre: %s - Apellido: %s - DNI: %s - Edad: %d años", this.nombre, this.apellido, this.dni, this.edad);
     }
 
-    public String mostrarDatosPersonales() {
-        return this.toString();
-    }
-
-    //public void retirarEfectivo(Cuenta cuenta, double monto) {
-    //obtenerCuenta(tipo).disminuirSaldo(monto);
-    //}
-
-    public void retirarEfectivo(Cuenta cuenta, double monto) {
+    public void retirarEfectivo(Cuenta cuenta, double monto) throws ObjetoNuloEx, MontoIncorrectoEx, MontoSuperiorAlDisponibleEx {
+        if (cuenta == null) {
+            throw new ObjetoNuloEx();
+        } else if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        } else if (monto > cuenta.getSaldo()) {
+            throw new MontoSuperiorAlDisponibleEx();
+        }
         cuenta.disminuirSaldo(monto);
     }
 
-    public void comprarDolares(double monto) {
+    public void comprarDolares(double monto) throws MontoIncorrectoEx{
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        }
 
     }
 
@@ -81,6 +74,18 @@ public class Cliente {
 
     public Cuenta getCajaAhorroDolares() {
         return this.cajaAhorroDolares;
+    }
+
+    public String getDni() {
+        return this.dni;
+    }
+
+    public String getAlias() {
+        return this.alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
 }

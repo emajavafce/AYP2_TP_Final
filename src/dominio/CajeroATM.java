@@ -1,5 +1,10 @@
+package dominio;
+
 import cuentas.Cuenta;
+import excepciones.DniFormatoIncorrectoEx;
 import excepciones.NoExisteClienteEx;
+import menus.MenuBanco;
+import menus.MenuClientes;
 
 import java.util.Scanner;
 
@@ -8,6 +13,8 @@ public class CajeroATM {
     private DispensadorDinero dispensador;
     private Scanner scanner;
     private Banco banco;
+    private MenuBanco menuBanco;
+    private MenuClientes menuClientes;
 
     public CajeroATM() {
         this.dispensador = new DispensadorDinero();
@@ -15,28 +22,34 @@ public class CajeroATM {
         this.banco = new Banco();
     }
 
-    public void menuIngreso() throws NoExisteClienteEx {
+    public CajeroATM(Banco banco) {
+        this.dispensador = new DispensadorDinero();
+        this.scanner = new Scanner(System.in);
+        this.banco = banco;
+    }
+
+    public void menuIngreso() throws Exception {
         int opcion = 0;
         while (opcion != 3) {
-            System.out.println("--Menu del cajero ATM--\n1-Ingresar como cliente\n2-Ingresar como Banco\n3-Salir");
+            System.out.println("--Menu del cajero ATM--\n1-Ingresar como cliente\n2-Ingresar como banco\n3-Salir");
             System.out.print("Ingrese su opcion: ");
             opcion = Integer.parseInt(this.scanner.nextLine());
             switch (opcion) {
                 case 1:
-                    String dni = this.pedirDni();
-                    if (dni == null) {
-                        System.out.println("[ERROR] El formato del DNI ingresado es incorrecto");
-                        break;
+                    try {
+                        String dni = this.pedirDni();
+                        Cliente cliente = this.banco.buscarCliente(dni);
+                        new MenuClientes(cliente, this.dispensador, this.scanner).ejecutar();
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
                     }
-                    Cliente cliente = this.banco.buscarCliente(dni);
-                    if (cliente == null) {
-                        System.out.println("[ERROR] No existe el cliente");
-                        break;
-                    }
-                    new MenuClientes(cliente, this.dispensador, this.scanner);
                     break;
                 case 2:
-                    new MenuBanco(this.banco, this.dispensador, this.scanner);
+                    try {
+                        new MenuBanco(this.banco, this.scanner).ejecutar();
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
                     break;
                 case 3:
                     System.out.println("[INFO] Saliendo...");
@@ -52,10 +65,13 @@ public class CajeroATM {
     /*
     Solicita el DNI y verifica que lo ingresado tenga el formato correcto
      */
-    public String pedirDni() {
-        System.out.print("Ingrese su DNI: ");
+    public String pedirDni() throws DniFormatoIncorrectoEx {
+        System.out.print("Ingrese el DNI: ");
         String dni = this.scanner.nextLine();
-        return Verificador.dniCorrecto(dni) ? dni : null;
+        if (!Verificador.dniCorrecto(dni)) {
+            throw new DniFormatoIncorrectoEx();
+        }
+        return dni;
     }
 
     /*

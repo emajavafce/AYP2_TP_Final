@@ -1,19 +1,18 @@
-import cuentas.Cuenta;
-import cuentas.CuentaCorriente;
-import cuentas.TipoCuenta;
+import dominio.Banco;
+import dominio.CajeroATM;
+import dominio.Cliente;
 import excepciones.NoExisteClienteEx;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class Pruebas {
 
     public static void main(String[] args) {
         try {
-            CajeroATM c = new CajeroATM();
+            Banco banco = new Banco();
+            banco.agregarCliente(new Cliente("Ema", "Faillace", "40488107", 29));
+            CajeroATM c = new CajeroATM(banco);
             c.menuIngreso();
-        } catch (NoExisteClienteEx ex) {
-            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }

@@ -1,5 +1,4 @@
-import excepciones.DenominacionIncorrectaEx;
-import excepciones.SinStockBilletesEx;
+package dominio;
 
 public class DispensadorDinero {
 
@@ -12,7 +11,7 @@ public class DispensadorDinero {
     }
 
     /*
-     Se instancian los objetos, de tipo Billete, de cada indice
+     Se instancian los objetos, de tipo dominio.Billete, de cada indice
      */
     private void instanciarObjetos() {
         for (int i = 0; i < 3; i++) {

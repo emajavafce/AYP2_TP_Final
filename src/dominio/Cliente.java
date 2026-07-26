@@ -1,6 +1,7 @@
-import cuentas.Cuenta;
-import cuentas.TipoCuenta;
-import cuentas.Transferencia;
+package dominio;
+
+import cuentas.*;
+import excepciones.CantMaxAliasSuperadaEx;
 import excepciones.MontoIncorrectoEx;
 import excepciones.MontoSuperiorAlDisponibleEx;
 import excepciones.ObjetoNuloEx;
@@ -11,11 +12,14 @@ public class Cliente {
     private String nombre, apellido, dni, alias;
     private int edad;
 
-    public Cliente(String nombre, String apellido, String dni, int edad) {
+    public Cliente(Banco banco, String nombre, String apellido, String dni, int edad) throws CantMaxAliasSuperadaEx {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
         this.edad = edad;
+        this.cuentaCorriente = new CuentaCorriente(banco.generarAlias());
+        this.cajaAhorroPesos = new CajaAhorroPesos(banco.generarAlias());
+        this.cajaAhorroDolares = new CajaAhorroDolares(banco.generarAlias());
     }
 
     public String mostrarDatosPersonales() {
@@ -33,14 +37,14 @@ public class Cliente {
         cuenta.disminuirSaldo(monto);
     }
 
-    public void comprarDolares(double monto) throws MontoIncorrectoEx{
+    public void comprarDolares(double monto) throws MontoIncorrectoEx {
         if (monto <= 0) {
             throw new MontoIncorrectoEx();
         }
 
     }
 
-    public void depositarFondos(TipoCuenta tipo, double monto) {
+    public void depositarFondos(TipoCuenta tipo, double monto) throws MontoIncorrectoEx {
         this.obtenerCuenta(tipo).aumentarSaldo(monto);
     }
 
@@ -86,6 +90,13 @@ public class Cliente {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public void mostrarEstadoDeCuentas() {
+        System.out.println("Estado de cuentas:");
+        System.out.println("\t" + this.cuentaCorriente.mostrarDatosCuenta());
+        System.out.println("\t" + this.cajaAhorroPesos.mostrarDatosCuenta());
+        System.out.println("\t" + this.cajaAhorroDolares.mostrarDatosCuenta());
     }
 
 }

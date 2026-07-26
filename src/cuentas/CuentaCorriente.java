@@ -2,15 +2,15 @@ package cuentas;
 
 public class CuentaCorriente extends Cuenta {
 
-    private double saldoDescubierto;
+    private static final double MONTO_DESCUBIERTO = 1000.00;
 
-    public CuentaCorriente(TipoCuenta tipo, String alias, double montoDescubierto) {
-        super(tipo, alias);
-        this.saldoDescubierto = montoDescubierto;
+    public CuentaCorriente(String alias) {
+        super(alias);
+        super.setTipo("01");
     }
 
     @Override
-    public String toString() {
-        return super.toString() + "," + this.saldoDescubierto;
+    public String mostrarDatosCuenta() {
+        return super.mostrarDatosCuenta() + ", $" + this.getSaldo() + ", $" + CuentaCorriente.MONTO_DESCUBIERTO;
     }
 }

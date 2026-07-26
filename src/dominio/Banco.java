@@ -1,3 +1,5 @@
+package dominio;
+
 import java.util.*;
 
 import excepciones.*;
@@ -17,7 +19,7 @@ public class Banco {
     }
 
     /**
-     * Agrega un cliente al registro del Banco
+     * Agrega un cliente al registro del dominio.Banco
      *
      * @param cliente
      * @throws NullPointerException
@@ -38,7 +40,7 @@ public class Banco {
     }
 
     /**
-     * Muestra todos los clientes registrados en el Banco
+     * Muestra todos los clientes registrados en el dominio.Banco
      *
      * @throws NoHayClientesCargadosEx
      */
@@ -47,12 +49,12 @@ public class Banco {
             throw new NoHayClientesCargadosEx();
         }
         for (Cliente cliente : this.dniCliente.values()) {
-            System.out.println(cliente.mostrarDatosPersonales());
+            System.out.println("\t" + cliente.mostrarDatosPersonales());
         }
     }
 
     /**
-     * Elimina un cliente del registro del Banco
+     * Elimina un cliente del registro del dominio.Banco
      *
      * @param dni
      * @throws NoExisteClienteEx
@@ -66,7 +68,7 @@ public class Banco {
     }
 
     /**
-     * Se verifica si existe un cliente en el registro del Banco
+     * Se verifica si existe un cliente en el registro del dominio.Banco
      *
      * @param dni
      * @return
@@ -76,7 +78,7 @@ public class Banco {
     }
 
     /**
-     * Busca un cliente dentro de los registro del Banco
+     * Busca un cliente dentro de los registro del dominio.Banco
      *
      * @param dni
      * @return
@@ -135,7 +137,7 @@ public class Banco {
     }
 
     /**
-     * Verifica si hay clientes registrados en el Banco
+     * Verifica si hay clientes registrados en el dominio.Banco
      *
      * @return
      */

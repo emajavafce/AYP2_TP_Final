@@ -1,16 +1,17 @@
+package menus;
+
 import excepciones.*;
+import dominio.*;
 
 import java.util.Scanner;
 
 public class MenuBanco {
 
     private final Banco banco;
-    private final DispensadorDinero dispensador;
     private final Scanner scanner;
 
-    public MenuBanco(Banco banco, DispensadorDinero dispensador, Scanner scanner) {
+    public MenuBanco(Banco banco, Scanner scanner) {
         this.banco = banco;
-        this.dispensador = dispensador;
         this.scanner = scanner;
     }
 
@@ -31,19 +32,17 @@ public class MenuBanco {
                     this.listarClientes();
                     break;
                 case 3:
-                    Cliente cliente = this.buscarCliente();
-                    System.out.println(cliente);
+                    System.out.println("[INFO] El cliente buscado es: " + this.buscarCliente().mostrarDatosPersonales());
                     break;
                 case 4:
                     this.eliminarCliente();
                     System.out.println("[INFO] El cliente ha sido eliminado!");
                     break;
                 case 5:
-                    this.scanner.close();
-                    System.out.println("[INFO] Saliendo del programa");
+                    System.out.println("[INFO] Saliendo del menu del Banco...");
                     break;
                 default:
-                    System.out.println("[ERROR] La opcion ingresada es incorrecta");
+                    System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente");
             }
         }
     }
@@ -87,6 +86,7 @@ public class MenuBanco {
      * @throws EdadIncorrectaEx
      */
     private int pedirEdad() throws FormatoEdadIncorrectoEx, EdadIncorrectaEx {
+        System.out.print("Ingrese la edad: ");
         int edad;
         try {
             edad = Integer.parseInt(this.scanner.nextLine());
@@ -100,7 +100,7 @@ public class MenuBanco {
     }
 
     /**
-     * Agrega un cliente al registro del Banco
+     * Agrega un cliente al registro del dominio.Banco
      *
      * @throws DniFormatoIncorrectoEx
      * @throws ClienteYaRegistradoEx
@@ -131,7 +131,7 @@ public class MenuBanco {
     }
 
     /**
-     * Busca un cliente dentro de los registro del Banco
+     * Busca un cliente dentro de los registro del dominio.Banco
      *
      * @return
      * @throws DniFormatoIncorrectoEx
@@ -143,7 +143,7 @@ public class MenuBanco {
     }
 
     /**
-     * Elimina un cliente de los registros del Banco
+     * Elimina un cliente de los registros del dominio.Banco
      *
      * @throws DniFormatoIncorrectoEx
      * @throws NoExisteClienteEx
@@ -152,6 +152,5 @@ public class MenuBanco {
         String dni = this.pedirDni();
         this.banco.eliminarCliente(dni);
     }
-
 
 }

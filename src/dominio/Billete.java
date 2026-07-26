@@ -1,3 +1,5 @@
+package dominio;
+
 public class Billete {
 
     private final int denominacion;

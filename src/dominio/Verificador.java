@@ -1,3 +1,5 @@
+package dominio;
+
 public class Verificador {
 
     public static boolean nombreApellidoCorrectos(String nombre, String apellido) {

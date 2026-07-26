@@ -1,5 +1,8 @@
 package cuentas;
 
+import excepciones.MontoIncorrectoEx;
+import excepciones.MontoSuperiorAlDisponibleEx;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +14,7 @@ public class Cuenta {
     private List<Transferencia> transHechas;
     private List<Transferencia> transRecibidas;
 
-    public Cuenta(TipoCuenta tipo, String alias) {
-        this.tipo = tipo.getCodigo();
+    public Cuenta(String alias) {
         this.alias = alias;
         this.transHechas = new ArrayList<>();
         this.transRecibidas = new ArrayList<>();
@@ -42,24 +44,32 @@ public class Cuenta {
         this.alias = alias;
     }
 
-    public void aumentarSaldo(double monto) {
-        this.saldo += monto;
-    }
-
-    public void disminuirSaldo(double monto) {
-        this.saldo -= monto;
-    }
-
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
-    public String toString() {
-        return this.tipo + "," + this.alias + "," + this.saldo;
+    public String getTipo() {
+        return this.tipo;
     }
 
-    public boolean saldoSuficienteParaExtraxion(double monto) {
-        return monto <= this.saldo;
+    public void aumentarSaldo(double monto) throws MontoIncorrectoEx {
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        }
+        this.saldo += monto;
+    }
+
+    public void disminuirSaldo(double monto) throws MontoIncorrectoEx, MontoSuperiorAlDisponibleEx {
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        } else if (this.saldo < monto) {
+            throw new MontoSuperiorAlDisponibleEx();
+        }
+        this.saldo -= monto;
+    }
+
+    public String mostrarDatosCuenta() {
+        return this.tipo + "," + this.alias + ", " + this.saldo;
     }
 
 }

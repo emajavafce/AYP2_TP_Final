@@ -1,6 +1,6 @@
-package excepciones;
+package excepciones.banco;
 
-public class NoHayClientesCargadosEx extends Exception {
+public class NoHayClientesCargadosEx extends BancoExcepciones {
 
     public NoHayClientesCargadosEx() {
         super("[ERROR] No hay clientes cargados...");

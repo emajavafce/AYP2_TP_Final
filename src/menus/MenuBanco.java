@@ -1,7 +1,10 @@
 package menus;
 
-import excepciones.*;
 import dominio.*;
+import excepciones.banco.*;
+import excepciones.formato.*;
+import excepciones.menu.MenuExcepciones;
+import excepciones.menu.OpcionConFormatoIncorrectoEx;
 
 import java.util.Scanner;
 
@@ -15,13 +18,17 @@ public class MenuBanco {
         this.scanner = scanner;
     }
 
-    public void ejecutar() throws Exception {
+    public void ejecutar() throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
         int opcion = 0;
         String menu = " --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir";
         while (opcion != 5) {
             System.out.println(menu);
             System.out.print("Ingrese su opcion: ");
-            opcion = Integer.parseInt(this.scanner.nextLine());
+            try {
+                opcion = Integer.parseInt(this.scanner.nextLine());
+            } catch (NumberFormatException ex) {
+                throw new OpcionConFormatoIncorrectoEx();
+            }
             switch (opcion) {
                 case 1:
                     this.agregarCliente();
@@ -32,7 +39,9 @@ public class MenuBanco {
                     this.listarClientes();
                     break;
                 case 3:
-                    System.out.println("[INFO] El cliente buscado es: " + this.buscarCliente().mostrarDatosPersonales());
+                    Cliente cliente = this.buscarCliente();
+                    System.out.println("[INFO] El cliente buscado es:");
+                    System.out.println("\t" + cliente.mostrarDatosPersonales());
                     break;
                 case 4:
                     this.eliminarCliente();
@@ -53,7 +62,7 @@ public class MenuBanco {
      * @return
      * @throws DniFormatoIncorrectoEx
      */
-    private String pedirDni() throws DniFormatoIncorrectoEx {
+    private String pedirDni() throws FormatoExcepciones {
         System.out.print("Ingrese el DNI: ");
         String dni = this.scanner.nextLine();
         if (!Verificador.dniCorrecto(dni)) {
@@ -65,9 +74,8 @@ public class MenuBanco {
     /**
      * Solicita el nombre y apellido del cliente
      *
-     * @throws FormatoNombreApellidoIncorrectoEx Si el nombre o apellido tiene un formato erroneo
      */
-    private String[] pedirNombreApellido() throws FormatoNombreApellidoIncorrectoEx {
+    private String[] pedirNombreApellido() throws FormatoExcepciones {
         System.out.print("Ingrese el nombre: ");
         String nombre = this.scanner.nextLine();
         System.out.print("Ingrese el apellido: ");
@@ -102,31 +110,21 @@ public class MenuBanco {
     /**
      * Agrega un cliente al registro del dominio.Banco
      *
-     * @throws DniFormatoIncorrectoEx
-     * @throws ClienteYaRegistradoEx
-     * @throws CantMaxAliasSuperadaEx
-     * @throws FormatoEdadIncorrectoEx
-     * @throws EdadIncorrectaEx
-     * @throws FormatoNombreApellidoIncorrectoEx
      */
-    private void agregarCliente() throws DniFormatoIncorrectoEx, ClienteYaRegistradoEx, CantMaxAliasSuperadaEx, FormatoEdadIncorrectoEx, EdadIncorrectaEx, FormatoNombreApellidoIncorrectoEx {
+    private void agregarCliente() throws BancoExcepciones, FormatoExcepciones {
         String dni = this.pedirDni();
         if (this.banco.existeCliente(dni)) {
             throw new ClienteYaRegistradoEx();
         }
         String[] datos = this.pedirNombreApellido();
-        String nombre = datos[0];
-        String apellido = datos[1];
         int edad = this.pedirEdad();
-        this.banco.agregarCliente(new Cliente(nombre, apellido, dni, edad));
+        this.banco.agregarCliente(new Cliente(this.banco, datos[0], datos[1], dni, edad));
     }
 
     /**
      * Muestra todos los clientes registrados hasta el momento
-     *
-     * @throws NoHayClientesCargadosEx
      */
-    private void listarClientes() throws NoHayClientesCargadosEx {
+    private void listarClientes() throws BancoExcepciones {
         this.banco.listarClientes();
     }
 
@@ -137,7 +135,7 @@ public class MenuBanco {
      * @throws DniFormatoIncorrectoEx
      * @throws NoExisteClienteEx
      */
-    private Cliente buscarCliente() throws DniFormatoIncorrectoEx, NoExisteClienteEx {
+    private Cliente buscarCliente() throws FormatoExcepciones, BancoExcepciones {
         String dni = this.pedirDni();
         return this.banco.buscarCliente(dni);
     }
@@ -148,7 +146,7 @@ public class MenuBanco {
      * @throws DniFormatoIncorrectoEx
      * @throws NoExisteClienteEx
      */
-    private void eliminarCliente() throws DniFormatoIncorrectoEx, NoExisteClienteEx {
+    private void eliminarCliente() throws FormatoExcepciones, BancoExcepciones {
         String dni = this.pedirDni();
         this.banco.eliminarCliente(dni);
     }

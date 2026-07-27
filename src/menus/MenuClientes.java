@@ -2,8 +2,8 @@ package menus;
 
 import cuentas.Cuenta;
 import dominio.*;
-import excepciones.MontoIncorrectoEx;
-import excepciones.MontoSuperiorAlDisponibleEx;
+import excepciones.banco.MontoIncorrectoEx;
+import excepciones.banco.MontoSuperiorAlDisponibleEx;
 import excepciones.ObjetoNuloEx;
 
 import java.util.Scanner;

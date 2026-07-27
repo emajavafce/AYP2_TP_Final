@@ -1,8 +1,7 @@
 package dominio;
 
 import cuentas.Cuenta;
-import excepciones.DniFormatoIncorrectoEx;
-import excepciones.NoExisteClienteEx;
+import excepciones.formato.DniFormatoIncorrectoEx;
 import menus.MenuBanco;
 import menus.MenuClientes;
 

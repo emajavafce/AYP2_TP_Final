@@ -1,7 +1,7 @@
 package cuentas;
 
-import excepciones.MontoIncorrectoEx;
-import excepciones.MontoSuperiorAlDisponibleEx;
+import excepciones.banco.MontoIncorrectoEx;
+import excepciones.banco.MontoSuperiorAlDisponibleEx;
 
 import java.util.ArrayList;
 import java.util.List;

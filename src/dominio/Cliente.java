@@ -1,15 +1,15 @@
 package dominio;
 
 import cuentas.*;
-import excepciones.CantMaxAliasSuperadaEx;
-import excepciones.MontoIncorrectoEx;
-import excepciones.MontoSuperiorAlDisponibleEx;
+import excepciones.banco.CantMaxAliasSuperadaEx;
+import excepciones.banco.MontoIncorrectoEx;
+import excepciones.banco.MontoSuperiorAlDisponibleEx;
 import excepciones.ObjetoNuloEx;
 
 public class Cliente {
 
     private Cuenta cuentaCorriente, cajaAhorroPesos, cajaAhorroDolares;
-    private String nombre, apellido, dni, alias;
+    private String nombre, apellido, dni;
     private int edad;
 
     public Cliente(Banco banco, String nombre, String apellido, String dni, int edad) throws CantMaxAliasSuperadaEx {
@@ -68,6 +68,22 @@ public class Cliente {
         };
     }
 
+    public void mostrarEstadoDeCuentas() {
+        System.out.println("Estado de cuentas:");
+        System.out.println("\t" + this.cuentaCorriente.mostrarDatosCuenta());
+        System.out.println("\t" + this.cajaAhorroPesos.mostrarDatosCuenta());
+        System.out.println("\t" + this.cajaAhorroDolares.mostrarDatosCuenta());
+    }
+
+    /**
+     * Se obtienen los alias de cada cuenta del cliente
+     *
+     * @return
+     */
+    public String[] getAliasDeLasCuentas() {
+        return new String[]{this.cuentaCorriente.getAlias(), this.cajaAhorroPesos.getAlias(), this.cajaAhorroDolares.getAlias()};
+    }
+
     public Cuenta getCuentaCorriente() {
         return this.cuentaCorriente;
     }
@@ -82,21 +98,6 @@ public class Cliente {
 
     public String getDni() {
         return this.dni;
-    }
-
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public void mostrarEstadoDeCuentas() {
-        System.out.println("Estado de cuentas:");
-        System.out.println("\t" + this.cuentaCorriente.mostrarDatosCuenta());
-        System.out.println("\t" + this.cajaAhorroPesos.mostrarDatosCuenta());
-        System.out.println("\t" + this.cajaAhorroDolares.mostrarDatosCuenta());
     }
 
 }

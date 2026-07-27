@@ -2,27 +2,31 @@ package dominio;
 
 import java.util.*;
 
-import excepciones.*;
+import excepciones.banco.CantMaxAliasSuperadaEx;
+import excepciones.banco.ClienteYaRegistradoEx;
+import excepciones.banco.NoExisteClienteEx;
+import excepciones.banco.NoHayClientesCargadosEx;
 
 public class Banco {
 
     private final Set<String> aliasUsados;
-    private final Map<String, Cliente> aliasCliente;
     private final Map<String, Cliente> dniCliente;
     private static final double PRECIO_DOLAR = 1500;
     private static final String[] PALABRAS = {"perro", "feo", "escobar", "pala", "marron", "manicero", "kuka", "gato", "mono", "mesa", "jijolines"};
 
     public Banco() {
         this.aliasUsados = new HashSet<>();
-        this.aliasCliente = new HashMap<>();
         this.dniCliente = new HashMap<>();
     }
 
     /**
-     * Agrega un cliente al registro del dominio.Banco
+     * Agrega un cliente al registro del banco.
+     * Genera y asigna los alias de sus cuentas antes de registrarlo.
      *
-     * @param cliente
-     * @throws NullPointerException
+     * @param cliente Cliente que se desea agregar.
+     * @throws IllegalArgumentException si el cliente es {@code null}.
+     * @throws ClienteYaRegistradoEx    si ya existe un cliente con el mismo DNI.
+     * @throws CantMaxAliasSuperadaEx   si no es posible generar nuevos alias.
      */
     public void agregarCliente(Cliente cliente) throws IllegalArgumentException, ClienteYaRegistradoEx, CantMaxAliasSuperadaEx {
         if (cliente == null) {
@@ -32,11 +36,14 @@ public class Banco {
         if (this.existeCliente(dni)) {
             throw new ClienteYaRegistradoEx();
         }
-        String alias = this.generarAlias();
-        cliente.setAlias(alias);
-        this.aliasUsados.add(alias);
-        this.aliasCliente.put(alias, cliente);
-        this.dniCliente.put(cliente.getDni(), cliente);
+        String aliasCuentaCorriente = this.generarAlias();
+        String aliasCajaAhorroPesos = this.generarAlias();
+        String aliasCajaAhorroDolares = this.generarAlias();
+        cliente.getCuentaCorriente().setAlias(aliasCuentaCorriente);
+        cliente.getCajaAhorroPesos().setAlias(aliasCajaAhorroPesos);
+        cliente.getCajaAhorroDolares().setAlias(aliasCajaAhorroDolares);
+        this.agregarVariosAlias(aliasCuentaCorriente, aliasCajaAhorroPesos, aliasCajaAhorroDolares);
+        this.dniCliente.put(dni, cliente);
     }
 
     /**
@@ -63,8 +70,7 @@ public class Banco {
         Cliente cliente = this.dniCliente.remove(dni);
         if (cliente == null)
             throw new NoExisteClienteEx();
-        aliasCliente.remove(cliente.getAlias());
-        aliasUsados.remove(cliente.getAlias());
+        this.quitarAliasUsados(cliente.getAliasDeLasCuentas());
     }
 
     /**
@@ -143,6 +149,28 @@ public class Banco {
      */
     public boolean hayClientesRegistrados() {
         return !this.dniCliente.isEmpty();
+    }
+
+    /**
+     * Habilita los tres alias utilizados para que puedan ser usados nuevamente por otro cliente
+     *
+     * @param variosAlias
+     */
+    private void quitarAliasUsados(String... variosAlias) {
+        for (String alias : variosAlias) {
+            this.aliasUsados.remove(alias);
+        }
+    }
+
+    /**
+     * Agrega los nuevos alias generados por agregar un cliente
+     *
+     * @param aliasNuevos
+     */
+    private void agregarVariosAlias(String... aliasNuevos) {
+        for (String alias : aliasNuevos) {
+            this.aliasUsados.add(alias);
+        }
     }
 
     /**

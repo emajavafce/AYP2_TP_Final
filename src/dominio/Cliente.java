@@ -1,9 +1,7 @@
 package dominio;
 
 import cuentas.*;
-import excepciones.banco.CantMaxAliasSuperadaEx;
-import excepciones.banco.MontoIncorrectoEx;
-import excepciones.banco.MontoSuperiorAlDisponibleEx;
+import excepciones.banco.*;
 import excepciones.objetos.ObjetoNuloEx;
 
 public class Cliente {
@@ -26,10 +24,8 @@ public class Cliente {
         return String.format("Nombre: %s - Apellido: %s - DNI: %s - Edad: %d años", this.nombre, this.apellido, this.dni, this.edad);
     }
 
-    public void retirarEfectivo(Cuenta cuenta, double monto) throws ObjetoNuloEx, MontoIncorrectoEx, MontoSuperiorAlDisponibleEx {
-        if (cuenta == null) {
-            throw new ObjetoNuloEx();
-        } else if (monto <= 0) {
+    public void retirarDinero(Cuenta cuenta, double monto) throws BancoExcepciones {
+        if (monto <= 0) {
             throw new MontoIncorrectoEx();
         } else if (monto > cuenta.getSaldo()) {
             throw new MontoSuperiorAlDisponibleEx();
@@ -37,16 +33,18 @@ public class Cliente {
         cuenta.disminuirSaldo(monto);
     }
 
-    public void comprarDolares(double monto) throws MontoIncorrectoEx {
+    public void depositarDinero(Cuenta tipoCuenta, double monto) throws BancoExcepciones {
+        tipoCuenta.aumentarSaldo(monto);
+    }
+
+    public void comprarDolares(double monto) throws BancoExcepciones {
         if (monto <= 0) {
             throw new MontoIncorrectoEx();
         }
+        this.cajaAhorroDolares.aumentarSaldo(monto);
 
     }
 
-    public void depositarFondos(Cuenta tipoCuenta, double monto) throws MontoIncorrectoEx {
-        tipoCuenta.aumentarSaldo(monto);
-    }
 
     public void hacerTransferencia(TipoCuenta tipo, String aliasDestino, double monto, String motivo) {
         Cuenta cuenta = this.obtenerCuenta(tipo);

@@ -1,7 +1,6 @@
 package cuentas;
 
-import excepciones.banco.MontoIncorrectoEx;
-import excepciones.banco.MontoSuperiorAlDisponibleEx;
+import excepciones.banco.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,43 @@ public class Cuenta {
         this.alias = alias;
         this.transHechas = new ArrayList<>();
         this.transRecibidas = new ArrayList<>();
+    }
+
+    /**
+     * Incrementa el saldo de la cuenta
+     *
+     * @param monto
+     * @throws BancoExcepciones
+     */
+    public void aumentarSaldo(double monto) throws BancoExcepciones {
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        }
+        this.saldo += monto;
+    }
+
+    /**
+     * Disminuye el saldo de la cuenta
+     *
+     * @param monto
+     * @throws BancoExcepciones
+     */
+    public void disminuirSaldo(double monto) throws BancoExcepciones {
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        } else if (this.saldo < monto) {
+            throw new MontoSuperiorAlDisponibleEx();
+        }
+        this.saldo -= monto;
+    }
+
+    /**
+     * Muesta el tipo y alias de una cuentas
+     *
+     * @return
+     */
+    public String mostrarDatosCuenta() {
+        return this.tipo + "," + this.alias;
     }
 
     public void cargarTransferenciaHecha(Transferencia transferencia) {
@@ -50,26 +86,6 @@ public class Cuenta {
 
     public String getTipo() {
         return this.tipo;
-    }
-
-    public void aumentarSaldo(double monto) throws MontoIncorrectoEx {
-        if (monto <= 0) {
-            throw new MontoIncorrectoEx();
-        }
-        this.saldo += monto;
-    }
-
-    public void disminuirSaldo(double monto) throws MontoIncorrectoEx, MontoSuperiorAlDisponibleEx {
-        if (monto <= 0) {
-            throw new MontoIncorrectoEx();
-        } else if (this.saldo < monto) {
-            throw new MontoSuperiorAlDisponibleEx();
-        }
-        this.saldo -= monto;
-    }
-
-    public String mostrarDatosCuenta() {
-        return this.tipo + "," + this.alias;
     }
 
 }

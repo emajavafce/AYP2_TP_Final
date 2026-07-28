@@ -2,9 +2,13 @@ package menus;
 
 import cuentas.Cuenta;
 import dominio.*;
+import excepciones.banco.BancoExcepciones;
 import excepciones.banco.MontoIncorrectoEx;
 import excepciones.banco.MontoSuperiorAlDisponibleEx;
-import excepciones.ObjetoNuloEx;
+import excepciones.formato.FormatoExcepciones;
+import excepciones.menu.MenuExcepciones;
+import excepciones.menu.OpcionConFormatoIncorrectoEx;
+import excepciones.objetos.ObjetoNuloEx;
 
 import java.util.Scanner;
 
@@ -23,7 +27,6 @@ public class MenuClientes {
     public void ejecutar() throws Exception {
         int opcion = 0;
         String menu = "--- Menu de clientes ---\n1-Retirar efectivo\n2-Comprar dolares\n3-Depositar fondos\n4-Hacer transferencia\n5-Revisar estado de cuentas\n6-Salir";
-        Cuenta tipoDeCuenta;
         while (opcion != 5) {
             System.out.println(menu);
             System.out.print("Ingrese su opcion: ");
@@ -36,10 +39,12 @@ public class MenuClientes {
                 case 2:
                     break;
                 case 3:
+                    this.depositarFondos();
                     break;
                 case 4:
                     break;
                 case 5:
+                    this.cliente.mostrarEstadoDeCuentas();
                     break;
                 case 6:
                     System.out.println("[INFO] Saliendo del menu de clientes...");
@@ -51,10 +56,27 @@ public class MenuClientes {
         }
     }
 
-    private Cuenta elegirCuenta() throws NumberFormatException {
+    private void depositarFondos() throws MenuExcepciones, BancoExcepciones {
+        Cuenta tipoCuenta = this.elegirCuenta();
+        int monto;
+        try {
+            System.out.print("Ingrese el monto a depositar: ");
+            monto = Integer.parseInt(this.scanner.nextLine());
+            this.cliente.depositarFondos(tipoCuenta, monto);
+        } catch (NumberFormatException ex) {
+            throw new MontoIncorrectoEx();
+        }
+    }
+
+    private Cuenta elegirCuenta() throws MenuExcepciones {
         System.out.println("Seleccione el tipo de cuenta:\n1-Cuenta corriente\n2-Caja de ahorro en pesos\n3-Caja de ahorro en dolares");
         System.out.print("Ingrese su opcion: ");
-        int opcion = Integer.parseInt(this.scanner.nextLine());
+        int opcion;
+        try {
+            opcion = Integer.parseInt(this.scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new OpcionConFormatoIncorrectoEx();
+        }
         switch (opcion) {
             case 1:
                 return this.cliente.getCuentaCorriente();
@@ -63,12 +85,12 @@ public class MenuClientes {
             case 3:
                 return this.cliente.getCajaAhorroDolares();
             default:
-                System.out.println("[ERROR] La opcion ingresada es incorrecta");
+                System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
                 return this.elegirCuenta();
         }
     }
 
-    private Cuenta elegirCuentaEnPesos() throws NumberFormatException {
+    private Cuenta elegirCualCuentaEnPesos() throws NumberFormatException {
         System.out.println("Seleccione el tipo de cuenta:\n1-Cuenta corriente\n2-Caja de ahorro en pesos");
         System.out.print("Ingrese su opcion: ");
         int opcion = Integer.parseInt(this.scanner.nextLine());
@@ -79,12 +101,12 @@ public class MenuClientes {
                 return this.cliente.getCajaAhorroPesos();
             default:
                 System.out.println("[ERROR] La opcion ingresada es incorrecta");
-                return this.elegirCuentaEnPesos();
+                return this.elegirCualCuentaEnPesos();
         }
     }
 
     private void retirarEfectivo() throws MontoIncorrectoEx, MontoSuperiorAlDisponibleEx, ObjetoNuloEx {
-        Cuenta cuenta = this.elegirCuentaEnPesos();
+        Cuenta cuenta = this.elegirCualCuentaEnPesos();
         System.out.print("Ingrese el monto a retirar: ");
         int monto = Integer.parseInt(this.scanner.nextLine());
         if (!Verificador.montoCorrecto(monto)) {

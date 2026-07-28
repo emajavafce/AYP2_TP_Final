@@ -4,7 +4,7 @@ import cuentas.*;
 import excepciones.banco.CantMaxAliasSuperadaEx;
 import excepciones.banco.MontoIncorrectoEx;
 import excepciones.banco.MontoSuperiorAlDisponibleEx;
-import excepciones.ObjetoNuloEx;
+import excepciones.objetos.ObjetoNuloEx;
 
 public class Cliente {
 
@@ -44,8 +44,8 @@ public class Cliente {
 
     }
 
-    public void depositarFondos(TipoCuenta tipo, double monto) throws MontoIncorrectoEx {
-        this.obtenerCuenta(tipo).aumentarSaldo(monto);
+    public void depositarFondos(Cuenta tipoCuenta, double monto) throws MontoIncorrectoEx {
+        tipoCuenta.aumentarSaldo(monto);
     }
 
     public void hacerTransferencia(TipoCuenta tipo, String aliasDestino, double monto, String motivo) {

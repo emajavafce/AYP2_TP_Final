@@ -3,8 +3,7 @@ package menus;
 import dominio.*;
 import excepciones.banco.*;
 import excepciones.formato.*;
-import excepciones.menu.MenuExcepciones;
-import excepciones.menu.OpcionConFormatoIncorrectoEx;
+import excepciones.menu.*;
 
 import java.util.Scanner;
 
@@ -35,12 +34,12 @@ public class MenuBanco {
                     System.out.println("[INFO] El cliente ha sido agregado correctamente!");
                     break;
                 case 2:
-                    System.out.println("Clientes registrados:");
+                    System.out.println("[INFO] Clientes registrados:");
                     this.listarClientes();
                     break;
                 case 3:
                     Cliente cliente = this.buscarCliente();
-                    System.out.println("[INFO] El cliente buscado es:");
+                    System.out.println("[INFO] El cliente encontrado:");
                     System.out.println("\t" + cliente.mostrarDatosPersonales());
                     break;
                 case 4:
@@ -51,7 +50,7 @@ public class MenuBanco {
                     System.out.println("[INFO] Saliendo del menu del Banco...");
                     break;
                 default:
-                    System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente");
+                    System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
             }
         }
     }
@@ -93,7 +92,7 @@ public class MenuBanco {
      * @throws FormatoEdadIncorrectoEx
      * @throws EdadIncorrectaEx
      */
-    private int pedirEdad() throws FormatoEdadIncorrectoEx, EdadIncorrectaEx {
+    private int pedirEdad() throws FormatoExcepciones, BancoExcepciones {
         System.out.print("Ingrese la edad: ");
         int edad;
         try {

@@ -69,7 +69,7 @@ public class Cuenta {
     }
 
     public String mostrarDatosCuenta() {
-        return this.tipo + "," + this.alias + ", " + this.saldo;
+        return this.tipo + "," + this.alias;
     }
 
 }

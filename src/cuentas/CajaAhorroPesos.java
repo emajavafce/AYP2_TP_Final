@@ -9,6 +9,6 @@ public class CajaAhorroPesos extends Cuenta {
 
     @Override
     public String mostrarDatosCuenta() {
-        return super.mostrarDatosCuenta() + ", $" + this.getSaldo();
+        return super.mostrarDatosCuenta() + ",$" + this.getSaldo();
     }
 }

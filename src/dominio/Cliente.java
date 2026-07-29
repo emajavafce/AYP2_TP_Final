@@ -38,11 +38,7 @@ public class Cliente {
     }
 
     public void comprarDolares(double monto) throws BancoExcepciones {
-        if (monto <= 0) {
-            throw new MontoIncorrectoEx();
-        }
         this.cajaAhorroDolares.aumentarSaldo(monto);
-
     }
 
 
@@ -96,6 +92,10 @@ public class Cliente {
 
     public String getDni() {
         return this.dni;
+    }
+
+    public String getNombre() {
+        return this.nombre;
     }
 
 }

@@ -11,7 +11,7 @@ public class Banco {
 
     private final Set<String> aliasUsados;
     private final Map<String, Cliente> dniCliente;
-    private static final double PRECIO_DOLAR = 1500;
+    public static final double PRECIO_DOLAR = 1500;
     private static final String[] PALABRAS = {"perro", "feo", "escobar", "pala", "marron", "manicero", "kuka", "gato", "mono", "mesa", "jijolines"};
 
     public Banco() {

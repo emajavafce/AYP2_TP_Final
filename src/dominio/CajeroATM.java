@@ -38,6 +38,7 @@ public class CajeroATM {
                     try {
                         String dni = this.pedirDni();
                         Cliente cliente = this.banco.buscarCliente(dni);
+                        System.out.println("## BIENVENIDO " + cliente.getNombre().toUpperCase() + " ##");
                         new MenuClientes(cliente, this.dispensador, this.scanner).ejecutar();
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());

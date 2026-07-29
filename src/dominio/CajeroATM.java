@@ -1,9 +1,11 @@
 package dominio;
 
-import cuentas.Cuenta;
+import excepciones.banco.BancoExcepciones;
 import excepciones.formato.DniFormatoIncorrectoEx;
-import menus.MenuBanco;
-import menus.MenuClientes;
+import excepciones.formato.FormatoExcepciones;
+import excepciones.menu.MenuExcepciones;
+import excepciones.menu.OpcionConFormatoIncorrectoEx;
+import menus.*;
 
 import java.util.Scanner;
 
@@ -12,8 +14,6 @@ public class CajeroATM {
     private DispensadorDinero dispensador;
     private Scanner scanner;
     private Banco banco;
-    private MenuBanco menuBanco;
-    private MenuClientes menuClientes;
 
     public CajeroATM() {
         this.dispensador = new DispensadorDinero();
@@ -21,81 +21,78 @@ public class CajeroATM {
         this.banco = new Banco();
     }
 
-    public CajeroATM(Banco banco) {
+    public CajeroATM(Banco banco) throws MenuExcepciones, BancoExcepciones, FormatoExcepciones {
         this.dispensador = new DispensadorDinero();
         this.scanner = new Scanner(System.in);
         this.banco = banco;
+        ejecutar();
     }
 
-    public void menuIngreso() throws Exception {
+    private void ejecutar() throws MenuExcepciones, BancoExcepciones, FormatoExcepciones {
         int opcion = 0;
         while (opcion != 3) {
             System.out.println("--Menu del cajero ATM--\n1-Ingresar como cliente\n2-Ingresar como banco\n3-Salir");
             System.out.print("Ingrese su opcion: ");
-            opcion = Integer.parseInt(this.scanner.nextLine());
+            try {
+                opcion = Integer.parseInt(this.scanner.nextLine());
+            } catch (NumberFormatException ex) {
+                throw new OpcionConFormatoIncorrectoEx();
+            }
             switch (opcion) {
                 case 1:
-                    try {
-                        String dni = this.pedirDni();
-                        Cliente cliente = this.banco.buscarCliente(dni);
-                        System.out.println("## BIENVENIDO " + cliente.getNombre().toUpperCase() + " ##");
-                        new MenuClientes(cliente, this.dispensador, this.scanner).ejecutar();
-                    } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
-                    }
+                    ingresarComoCliente();
                     break;
                 case 2:
-                    try {
-                        new MenuBanco(this.banco, this.scanner).ejecutar();
-                    } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
-                    }
+                    ingresarComoBanco();
                     break;
                 case 3:
                     System.out.println("[INFO] Saliendo...");
-                    this.scanner.close();
+                    scanner.close();
                     break;
                 default:
-                    System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente");
+                    System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
                     break;
             }
         }
     }
 
-    /*
-    Solicita el DNI y verifica que lo ingresado tenga el formato correcto
+    /**
+     * Si se ingresa como cliente, se solicita el DNI para verificar si esta registrado o no
+     *
+     * @throws FormatoExcepciones
+     * @throws BancoExcepciones
+     * @throws MenuExcepciones
+     */
+    private void ingresarComoCliente() throws FormatoExcepciones, BancoExcepciones, MenuExcepciones {
+        String dni = pedirDni();
+        Cliente cliente = banco.buscarCliente(dni);
+        System.out.println("## BIENVENIDO/A " + cliente.getNombre().toUpperCase() + " ##");
+        new MenuClientes(cliente, dispensador, scanner).ejecutar();
+    }
+
+    /**
+     * Se ingresa como Banco
+     *
+     * @throws FormatoExcepciones
+     * @throws BancoExcepciones
+     * @throws MenuExcepciones
+     */
+    private void ingresarComoBanco() throws FormatoExcepciones, BancoExcepciones, MenuExcepciones {
+        new MenuBanco(banco, scanner);
+    }
+
+    /**
+     * Solicita el DNI y verifica que lo ingresado tenga el formato correcto
+     *
+     * @return
+     * @throws DniFormatoIncorrectoEx
      */
     public String pedirDni() throws DniFormatoIncorrectoEx {
         System.out.print("Ingrese el DNI: ");
-        String dni = this.scanner.nextLine();
+        String dni = scanner.nextLine();
         if (!Verificador.dniCorrecto(dni)) {
             throw new DniFormatoIncorrectoEx();
         }
         return dni;
-    }
-
-    /*
-    Solicita al cliente que eliga el tipo de cuenta que va utilizar
-     */
-    private Cuenta elegirTipoCuenta() {
-        System.out.println("Elija el tipo de cuenta:\n1-Cuenta corriente\n2-Caja de ahorro en pesos\n3-Caja de ahorro en dolares");
-        int opcion = Integer.parseInt(this.scanner.nextLine());
-        return null;
-    }
-
-    public void retirarEfectivo(int montoParaRetirar) {
-        this.dispensador.entregarBilletes(montoParaRetirar);
-    }
-
-    public void comprarDolares(double monto) {
-
-    }
-
-    public void depositarFondosEn(Cuenta cuenta, double monto) {
-
-    }
-
-    public void realizarTransferencias(Cuenta cuenta, double monto) {
-
     }
 }

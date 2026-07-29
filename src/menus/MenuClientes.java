@@ -20,7 +20,7 @@ public class MenuClientes {
         this.scanner = scanner;
     }
 
-    public void ejecutar() throws Exception {
+    public void ejecutar() throws MenuExcepciones, FormatoExcepciones, BancoExcepciones {
         int opcion = 0;
         String menu = "--- Menu de clientes ---\n1-Retirar efectivo\n2-Comprar dolares\n3-Depositar fondos\n4-Hacer transferencia\n5-Revisar estado de cuentas\n6-Salir";
         while (opcion != 6) {

@@ -12,16 +12,16 @@ public class MenuBanco {
     private final Banco banco;
     private final Scanner scanner;
 
-    public MenuBanco(Banco banco, Scanner scanner) {
+    public MenuBanco(Banco banco, Scanner scanner) throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
         this.banco = banco;
         this.scanner = scanner;
+        ejecutar();
     }
 
-    public void ejecutar() throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
+    private void ejecutar() throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
         int opcion = 0;
-        String menu = " --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir";
         while (opcion != 5) {
-            System.out.println(menu);
+            System.out.println(" --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir");
             System.out.print("Ingrese su opcion: ");
             try {
                 opcion = Integer.parseInt(this.scanner.nextLine());
@@ -30,20 +30,20 @@ public class MenuBanco {
             }
             switch (opcion) {
                 case 1:
-                    this.agregarCliente();
+                    agregarCliente();
                     System.out.println("[INFO] El cliente ha sido agregado correctamente!");
                     break;
                 case 2:
                     System.out.println("[INFO] Clientes registrados:");
-                    this.listarClientes();
+                    listarClientes();
                     break;
                 case 3:
-                    Cliente cliente = this.buscarCliente();
+                    Cliente cliente = buscarCliente();
                     System.out.println("[INFO] El cliente encontrado:");
-                    System.out.println("\t" + cliente.mostrarDatosPersonales());
+                    System.out.println(cliente.mostrarDatosPersonales());
                     break;
                 case 4:
-                    this.eliminarCliente();
+                    eliminarCliente();
                     System.out.println("[INFO] El cliente ha sido eliminado!");
                     break;
                 case 5:
@@ -76,9 +76,9 @@ public class MenuBanco {
      */
     private String[] pedirNombreApellido() throws FormatoExcepciones {
         System.out.print("Ingrese el nombre: ");
-        String nombre = this.scanner.nextLine();
+        String nombre = scanner.nextLine();
         System.out.print("Ingrese el apellido: ");
-        String apellido = this.scanner.nextLine();
+        String apellido = scanner.nextLine();
         if (!Verificador.nombreApellidoCorrectos(nombre, apellido)) {
             throw new FormatoNombreApellidoIncorrectoEx();
         }
@@ -111,20 +111,20 @@ public class MenuBanco {
      *
      */
     private void agregarCliente() throws BancoExcepciones, FormatoExcepciones {
-        String dni = this.pedirDni();
-        if (this.banco.existeCliente(dni)) {
+        String dni = pedirDni();
+        if (banco.existeCliente(dni)) {
             throw new ClienteYaRegistradoEx();
         }
-        String[] datos = this.pedirNombreApellido();
-        int edad = this.pedirEdad();
-        this.banco.agregarCliente(new Cliente(this.banco, datos[0], datos[1], dni, edad));
+        String[] datos = pedirNombreApellido();
+        int edad = pedirEdad();
+        banco.agregarCliente(new Cliente(banco, datos[0], datos[1], dni, edad));
     }
 
     /**
      * Muestra todos los clientes registrados hasta el momento
      */
     private void listarClientes() throws BancoExcepciones {
-        this.banco.listarClientes();
+        banco.listarClientes();
     }
 
     /**
@@ -135,8 +135,8 @@ public class MenuBanco {
      * @throws NoExisteClienteEx
      */
     private Cliente buscarCliente() throws FormatoExcepciones, BancoExcepciones {
-        String dni = this.pedirDni();
-        return this.banco.buscarCliente(dni);
+        String dni = pedirDni();
+        return banco.buscarCliente(dni);
     }
 
     /**
@@ -146,8 +146,8 @@ public class MenuBanco {
      * @throws NoExisteClienteEx
      */
     private void eliminarCliente() throws FormatoExcepciones, BancoExcepciones {
-        String dni = this.pedirDni();
-        this.banco.eliminarCliente(dni);
+        String dni = pedirDni();
+        banco.eliminarCliente(dni);
     }
 
 }

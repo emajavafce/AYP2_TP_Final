@@ -2,10 +2,8 @@ package dominio;
 
 import java.util.*;
 
-import excepciones.banco.CantMaxAliasSuperadaEx;
-import excepciones.banco.ClienteYaRegistradoEx;
-import excepciones.banco.NoExisteClienteEx;
-import excepciones.banco.NoHayClientesCargadosEx;
+import excepciones.banco.*;
+import excepciones.objetos.ObjetoNuloEx;
 
 public class Banco {
 
@@ -28,10 +26,7 @@ public class Banco {
      * @throws ClienteYaRegistradoEx    si ya existe un cliente con el mismo DNI.
      * @throws CantMaxAliasSuperadaEx   si no es posible generar nuevos alias.
      */
-    public void agregarCliente(Cliente cliente) throws IllegalArgumentException, ClienteYaRegistradoEx, CantMaxAliasSuperadaEx {
-        if (cliente == null) {
-            throw new IllegalArgumentException();
-        }
+    public void agregarCliente(Cliente cliente) throws BancoExcepciones {
         String dni = cliente.getDni();
         if (this.existeCliente(dni)) {
             throw new ClienteYaRegistradoEx();
@@ -47,24 +42,7 @@ public class Banco {
     }
 
     /**
-     * Muestra todos los clientes registrados en el dominio.Banco
-     *
-     * @throws NoHayClientesCargadosEx
-     */
-    public void listarClientes() throws NoHayClientesCargadosEx {
-        if (!this.hayClientesRegistrados()) {
-            throw new NoHayClientesCargadosEx();
-        }
-        for (Cliente cliente : this.dniCliente.values()) {
-            System.out.println(cliente.mostrarDatosPersonales());
-        }
-    }
-
-    /**
-     * Elimina un cliente del registro del dominio.Banco
-     *
-     * @param dni
-     * @throws NoExisteClienteEx
+     * Elimina un cliente del registro del Banco
      */
     public void eliminarCliente(String dni) throws NoExisteClienteEx {
         Cliente cliente = this.dniCliente.remove(dni);
@@ -74,21 +52,14 @@ public class Banco {
     }
 
     /**
-     * Se verifica si existe un cliente en el registro del dominio.Banco
-     *
-     * @param dni
-     * @return
+     * Se verifica si existe un cliente en el registro del Banco
      */
     public boolean existeCliente(String dni) {
         return this.dniCliente.containsKey(dni);
     }
 
     /**
-     * Busca un cliente dentro de los registro del dominio.Banco
-     *
-     * @param dni
-     * @return
-     * @throws NoExisteClienteEx
+     * Busca un cliente dentro de los registro del Banco
      */
     public Cliente buscarCliente(String dni) throws NoExisteClienteEx {
         Cliente cliente = dniCliente.get(dni);
@@ -99,8 +70,6 @@ public class Banco {
 
     /**
      * Genera un alias unico e irrepetible entre los ya registrados
-     *
-     * @return
      */
     public String generarAlias() throws CantMaxAliasSuperadaEx {
         int cantMaxAlias = (int) Math.pow(PALABRAS.length, 3);
@@ -124,9 +93,6 @@ public class Banco {
 
     /**
      * Verifica si el alias generado no esta en uso
-     *
-     * @param alias
-     * @return
      */
     private boolean aliasDisponible(String alias) {
         return !this.aliasUsados.contains(alias);
@@ -134,18 +100,13 @@ public class Banco {
 
     /**
      * Verifica si el alias generado tiene la cantidad de caracteres necesaria
-     *
-     * @param alias
-     * @return
      */
     public boolean aliasCorrecto(String alias) {
         return alias.length() <= 20;
     }
 
     /**
-     * Verifica si hay clientes registrados en el dominio.Banco
-     *
-     * @return
+     * Verifica si hay clientes registrados en el Banco
      */
     public boolean hayClientesRegistrados() {
         return !this.dniCliente.isEmpty();
@@ -153,8 +114,6 @@ public class Banco {
 
     /**
      * Habilita los tres alias utilizados para que puedan ser usados nuevamente por otro cliente
-     *
-     * @param variosAlias
      */
     private void quitarAliasUsados(String... variosAlias) {
         for (String alias : variosAlias) {
@@ -164,8 +123,6 @@ public class Banco {
 
     /**
      * Agrega los nuevos alias generados por agregar un cliente
-     *
-     * @param aliasNuevos
      */
     private void agregarVariosAlias(String... aliasNuevos) {
         for (String alias : aliasNuevos) {
@@ -175,12 +132,17 @@ public class Banco {
 
     /**
      * Genera un numero entero aleatorio entre el 0 y un valor maximo sin incluir
-     *
-     * @param max
-     * @return
      */
     private int getNumAleatorio(int max) {
         return (int) (Math.random() * max);
+    }
+
+
+    public Collection<Cliente> getClientesRegistrados() throws BancoExcepciones {
+        if (this.dniCliente.isEmpty()) {
+            throw new NoHayClientesCargadosEx();
+        }
+        return this.dniCliente.values();
     }
 
 }

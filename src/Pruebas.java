@@ -11,8 +11,9 @@ public class Pruebas {
             banco.agregarCliente(new Cliente(banco, "Gaby", "Faillace", "42425058", 26));
             banco.agregarCliente(new Cliente(banco, "Carmen", "Medina", "12770078", 68));
             CajeroATM c = new CajeroATM(banco);
+            c.ejecutar();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Error al ejecutar el cajero");
         }
     }
 }

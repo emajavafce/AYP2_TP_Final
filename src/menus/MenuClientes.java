@@ -4,15 +4,14 @@ import cuentas.Cuenta;
 import dominio.*;
 import excepciones.banco.*;
 import excepciones.formato.*;
-import excepciones.menu.*;
 
 import java.util.Scanner;
 
 public class MenuClientes {
 
-    private Cliente cliente;
-    private DispensadorDinero dispensador;
-    private Scanner scanner;
+    private final Cliente cliente;
+    private final DispensadorDinero dispensador;
+    private final Scanner scanner;
 
     public MenuClientes(Cliente cliente, DispensadorDinero dispensador, Scanner scanner) {
         this.cliente = cliente;
@@ -20,25 +19,27 @@ public class MenuClientes {
         this.scanner = scanner;
     }
 
-    public void ejecutar() throws MenuExcepciones, FormatoExcepciones, BancoExcepciones {
+    public void ejecutar() throws FormatoExcepciones, BancoExcepciones {
         int opcion = 0;
         String menu = "--- Menu de clientes ---\n1-Retirar efectivo\n2-Comprar dolares\n3-Depositar fondos\n4-Hacer transferencia\n5-Revisar estado de cuentas\n6-Salir";
         while (opcion != 6) {
             System.out.println(menu);
             System.out.print("Ingrese su opcion: ");
-            opcion = Integer.parseInt(this.scanner.nextLine());
+            try {
+                opcion = Integer.parseInt(this.scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
+                continue;
+            }
             switch (opcion) {
                 case 1:
                     retirarEfectivo();
-                    System.out.println("[INFO] El dinero ha sido retirado!");
                     break;
                 case 2:
                     comprarDolares();
-                    System.out.println("[INFO] Los dolares han sido comprados!");
                     break;
                 case 3:
                     depositarFondos();
-                    System.out.println("[INFO] El dinero ha sido depositado!");
                     break;
                 case 4:
                     // POR IMPLEMENTAR
@@ -58,11 +59,8 @@ public class MenuClientes {
 
     /**
      * El cliente retira efecto de alguna de sus cuentas en pesos
-     *
-     * @throws FormatoExcepciones
-     * @throws BancoExcepciones
      */
-    private void retirarEfectivo() throws MenuExcepciones, FormatoExcepciones, BancoExcepciones {
+    private void retirarEfectivo() throws FormatoExcepciones, BancoExcepciones {
         Cuenta cuentaEnPesos = elegirCualCuentaEnPesos();
         System.out.print("Ingrese el monto a retirar: ");
         int montoSolicitado;
@@ -76,15 +74,13 @@ public class MenuClientes {
         }
         cliente.retirarDinero(cuentaEnPesos, montoSolicitado);
         dispensador.entregarBilletes(montoSolicitado);
+        System.out.println("[INFO] El dinero ha sido retirado!");
     }
 
     /**
      * El cliente compra dolares con el dinero disponible en sus cuentas de pesos
-     *
-     * @throws FormatoExcepciones
-     * @throws BancoExcepciones
      */
-    private void comprarDolares() throws MenuExcepciones, FormatoExcepciones, BancoExcepciones {
+    private void comprarDolares() throws FormatoExcepciones, BancoExcepciones {
         Cuenta cuentaEnPesos = elegirCualCuentaEnPesos();
         Cuenta cuentaEnDolares = cliente.getCajaAhorroDolares();
         int montoDolarSolicitado;
@@ -103,16 +99,14 @@ public class MenuClientes {
         }
         cuentaEnPesos.disminuirSaldo(montoEnPesosNecesario);
         cuentaEnDolares.aumentarSaldo(montoDolarSolicitado);
+        System.out.println("[INFO] Los dolares han sido comprados!");
     }
 
     /**
      * Se deposita un monto en una cuenta determinada
      *
-     * @throws MenuExcepciones
-     * @throws FormatoExcepciones
-     * @throws BancoExcepciones
      */
-    private void depositarFondos() throws MenuExcepciones, FormatoExcepciones, BancoExcepciones {
+    private void depositarFondos() throws FormatoExcepciones, BancoExcepciones {
         Cuenta cuentaDestino = elegirCuentaDestino();
         int monto;
         try {
@@ -122,20 +116,22 @@ public class MenuClientes {
             throw new FormatoMontoIncorrectoEx();
         }
         cliente.depositarDinero(cuentaDestino, monto);
+        System.out.println("[INFO] El dinero ha sido depositado!");
     }
 
     /**
      * Permite que el cliente seleccione la cuenta donde se depositarán los fondos. * * @return la cuenta destino seleccionada por el cliente * @throws MenuExcepciones si la opción ingresada tiene un formato inválido
      */
-    private Cuenta elegirCuentaDestino() throws MenuExcepciones {
+    private Cuenta elegirCuentaDestino() {
         while (true) {
             System.out.println("Seleccione el tipo de cuenta en donde se depositaran los fondos:\n1-Cuenta corriente\n2-Caja de ahorro en pesos\n3-Caja de ahorro en dolares");
             System.out.print("Ingrese su opcion: ");
             int opcion;
             try {
                 opcion = Integer.parseInt(this.scanner.nextLine());
-            } catch (NumberFormatException e) {
-                throw new OpcionConFormatoIncorrectoEx();
+            } catch (NumberFormatException ex) {
+                System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
+                continue;
             }
             switch (opcion) {
                 case 1:
@@ -153,10 +149,8 @@ public class MenuClientes {
     /**
      * Permite al cliente elegir la cuenta en pesos que va utilizar
      *
-     * @return
-     * @throws FormatoExcepciones
      */
-    private Cuenta elegirCualCuentaEnPesos() throws MenuExcepciones {
+    private Cuenta elegirCualCuentaEnPesos() {
         while (true) {
             System.out.println("Seleccione el tipo de cuenta en pesos a utilizar:\n1-Cuenta corriente\n2-Caja de ahorro en pesos");
             System.out.print("Ingrese su opcion: ");
@@ -164,7 +158,8 @@ public class MenuClientes {
             try {
                 opcion = Integer.parseInt(this.scanner.nextLine());
             } catch (NumberFormatException ex) {
-                throw new OpcionConFormatoIncorrectoEx();
+                System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
+                continue;
             }
             switch (opcion) {
                 case 1:

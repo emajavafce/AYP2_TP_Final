@@ -3,8 +3,8 @@ package menus;
 import dominio.*;
 import excepciones.banco.*;
 import excepciones.formato.*;
-import excepciones.menu.*;
 
+import java.util.Collection;
 import java.util.Scanner;
 
 public class MenuBanco {
@@ -12,39 +12,37 @@ public class MenuBanco {
     private final Banco banco;
     private final Scanner scanner;
 
-    public MenuBanco(Banco banco, Scanner scanner) throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
+    public MenuBanco(Banco banco, Scanner scanner) {
         this.banco = banco;
         this.scanner = scanner;
-        ejecutar();
     }
 
-    private void ejecutar() throws BancoExcepciones, FormatoExcepciones, MenuExcepciones {
+    /**
+     * Menu interactivo del Banco
+     */
+    public void ejecutar() throws BancoExcepciones, FormatoExcepciones {
         int opcion = 0;
         while (opcion != 5) {
             System.out.println(" --- Menu del banco ---\n1-Agregar cliente\n2-Listar clientes\n3-Buscar cliente\n4-Eliminar cliente\n5-Salir");
             System.out.print("Ingrese su opcion: ");
             try {
-                opcion = Integer.parseInt(this.scanner.nextLine());
+                opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException ex) {
-                throw new OpcionConFormatoIncorrectoEx();
+                System.out.println("[ERROR] Formato incorrecto. Ingrese un número válido...");
+                continue;
             }
             switch (opcion) {
                 case 1:
                     agregarCliente();
-                    System.out.println("[INFO] El cliente ha sido agregado correctamente!");
                     break;
                 case 2:
-                    System.out.println("[INFO] Clientes registrados:");
                     listarClientes();
                     break;
                 case 3:
-                    Cliente cliente = buscarCliente();
-                    System.out.println("[INFO] El cliente encontrado:");
-                    System.out.println(cliente.mostrarDatosPersonales());
+                    buscarCliente();
                     break;
                 case 4:
                     eliminarCliente();
-                    System.out.println("[INFO] El cliente ha sido eliminado!");
                     break;
                 case 5:
                     System.out.println("[INFO] Saliendo del menu del Banco...");
@@ -58,13 +56,11 @@ public class MenuBanco {
     /**
      * Se solicita el DNI al cliente
      *
-     * @return
-     * @throws DniFormatoIncorrectoEx
      */
     private String pedirDni() throws FormatoExcepciones {
         System.out.print("Ingrese el DNI: ");
         String dni = this.scanner.nextLine();
-        if (!Verificador.dniCorrecto(dni)) {
+        if (!VerificadorDatosInput.dniCorrecto(dni)) {
             throw new DniFormatoIncorrectoEx();
         }
         return dni;
@@ -79,18 +75,14 @@ public class MenuBanco {
         String nombre = scanner.nextLine();
         System.out.print("Ingrese el apellido: ");
         String apellido = scanner.nextLine();
-        if (!Verificador.nombreApellidoCorrectos(nombre, apellido)) {
+        if (!VerificadorDatosInput.nombreApellidoCorrectos(nombre, apellido)) {
             throw new FormatoNombreApellidoIncorrectoEx();
         }
-        String[] datos = {nombre, apellido};
-        return datos;
+        return new String[]{nombre, apellido};
     }
 
     /**
      * Se solicita la edad del cliente. Debe tener mas de 15 años y menos de 121
-     *
-     * @throws FormatoEdadIncorrectoEx
-     * @throws EdadIncorrectaEx
      */
     private int pedirEdad() throws FormatoExcepciones, BancoExcepciones {
         System.out.print("Ingrese la edad: ");
@@ -118,36 +110,38 @@ public class MenuBanco {
         String[] datos = pedirNombreApellido();
         int edad = pedirEdad();
         banco.agregarCliente(new Cliente(banco, datos[0], datos[1], dni, edad));
+        System.out.println("[INFO] El cliente ha sido agregado correctamente!");
     }
 
     /**
      * Muestra todos los clientes registrados hasta el momento
      */
     private void listarClientes() throws BancoExcepciones {
-        banco.listarClientes();
+        Collection<Cliente> clientes = banco.getClientesRegistrados();
+        System.out.println("[INFO] Clientes registrados:");
+        for (Cliente cliente : clientes) {
+            System.out.println("\t" + cliente.getDatosPersonales());
+        }
     }
 
     /**
-     * Busca un cliente dentro de los registro del dominio.Banco
-     *
-     * @return
-     * @throws DniFormatoIncorrectoEx
-     * @throws NoExisteClienteEx
+     * Busca un cliente dentro de los registro del Banco
      */
-    private Cliente buscarCliente() throws FormatoExcepciones, BancoExcepciones {
+    private void buscarCliente() throws FormatoExcepciones, BancoExcepciones {
         String dni = pedirDni();
-        return banco.buscarCliente(dni);
+        Cliente cliente = banco.buscarCliente(dni);
+        System.out.println("[INFO] El cliente buscado es:");
+        System.out.println("\t" + cliente.getDatosPersonales());
     }
 
     /**
      * Elimina un cliente de los registros del dominio.Banco
      *
-     * @throws DniFormatoIncorrectoEx
-     * @throws NoExisteClienteEx
      */
     private void eliminarCliente() throws FormatoExcepciones, BancoExcepciones {
         String dni = pedirDni();
         banco.eliminarCliente(dni);
+        System.out.println("[INFO] El cliente ha sido eliminado!");
     }
 
 }

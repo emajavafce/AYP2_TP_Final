@@ -20,7 +20,7 @@ public class Cliente {
         this.cajaAhorroDolares = new CajaAhorroDolares(banco.generarAlias());
     }
 
-    public String mostrarDatosPersonales() {
+    public String getDatosPersonales() {
         return String.format("Nombre: %s - Apellido: %s - DNI: %s - Edad: %d años", this.nombre, this.apellido, this.dni, this.edad);
     }
 

@@ -37,21 +37,16 @@ public class Cliente {
         tipoCuenta.aumentarSaldo(monto);
     }
 
-    public void comprarDolares(double monto) throws BancoExcepciones {
-        this.cajaAhorroDolares.aumentarSaldo(monto);
+    public void transferir(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, String motivo) {
+        Transferencia transferencia = new Transferencia(cuentaOrigen, cuentaDestino, monto, motivo);
+        cuentaOrigen.cargarTransferenciaHecha(transferencia);
+        cuentaDestino.cargarTrasferenciaRecibida(transferencia);
     }
 
-
-    public void hacerTransferencia(TipoCuenta tipo, String aliasDestino, double monto, String motivo) {
-        Cuenta cuenta = this.obtenerCuenta(tipo);
-        Transferencia transferencia = new Transferencia(cuenta.getAlias(), aliasDestino, monto, motivo);
-        this.obtenerCuenta(tipo).cargarTransferenciaHecha(transferencia);
-    }
-
-    public void recibirTransferencia(TipoCuenta tipo, String aliasOrigen, double monto, String motivo) {
-        Cuenta cuenta = this.obtenerCuenta(tipo);
-        Transferencia transferencia = new Transferencia(aliasOrigen, cuenta.getAlias(), monto, motivo);
-        this.obtenerCuenta(tipo).recibirTrasferencia(transferencia);
+    public void recibirTransferencia(Cuenta cuentaDestino, Transferencia transferencia) throws BancoExcepciones {
+        double montoRecibido = transferencia.getMonto();
+        cuentaDestino.aumentarSaldo(montoRecibido);
+        cuentaDestino.cargarTrasferenciaRecibida(transferencia);
     }
 
     private Cuenta obtenerCuenta(TipoCuenta tipo) {
@@ -74,8 +69,16 @@ public class Cliente {
      *
      * @return
      */
-    public String[] getAliasDeLasCuentas() {
+    public String[] getTodosLosAlias() {
         return new String[]{this.cuentaCorriente.getAlias(), this.cajaAhorroPesos.getAlias(), this.cajaAhorroDolares.getAlias()};
+    }
+
+    /**
+     * Se obtienen todos los alias que tiene el cliente segun cada cuenta
+     * @return
+     */
+    public String[] getAliasCuentas() {
+        return new String[]{cuentaCorriente.getAlias(), cajaAhorroPesos.getAlias(), cajaAhorroDolares.getAlias()};
     }
 
     public Cuenta getCuentaCorriente() {

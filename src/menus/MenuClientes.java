@@ -1,6 +1,7 @@
 package menus;
 
 import cuentas.Cuenta;
+import cuentas.Transferencia;
 import dominio.*;
 import excepciones.banco.*;
 import excepciones.formato.*;
@@ -9,11 +10,13 @@ import java.util.Scanner;
 
 public class MenuClientes {
 
+    private final Banco banco;
     private final Cliente cliente;
     private final DispensadorDinero dispensador;
     private final Scanner scanner;
 
-    public MenuClientes(Cliente cliente, DispensadorDinero dispensador, Scanner scanner) {
+    public MenuClientes(Banco banco, Cliente cliente, DispensadorDinero dispensador, Scanner scanner) {
+        this.banco = banco;
         this.cliente = cliente;
         this.dispensador = dispensador;
         this.scanner = scanner;
@@ -26,7 +29,7 @@ public class MenuClientes {
             System.out.println(menu);
             System.out.print("Ingrese su opcion: ");
             try {
-                opcion = Integer.parseInt(this.scanner.nextLine());
+                opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
                 System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
                 continue;
@@ -42,6 +45,7 @@ public class MenuClientes {
                     depositarFondos();
                     break;
                 case 4:
+                    transferir();
                     // POR IMPLEMENTAR
                     break;
                 case 5:
@@ -57,6 +61,27 @@ public class MenuClientes {
         }
     }
 
+    private void transferir() throws FormatoExcepciones, BancoExcepciones {
+        System.out.print("Ingrese el alias de la cuenta a la que va transferir: ");
+        String aliasDestino = scanner.nextLine();
+        if (VerificadorDatosInput.aliasCorrecto(aliasDestino)) {
+            throw new AliasIncorrectoEx();
+        }
+        if (!banco.aliasEnUso(aliasDestino)) {
+            throw new NoExisteClienteEx();
+        }
+        Cuenta cuentaDestino = banco.buscarCuentaPorAlias(aliasDestino);
+        Cuenta cuentaOrigen = elegirCualCuentaEnPesos();
+        double monto = solicitarMonto();
+        System.out.print("Ingrese el motivo/causa de la transferencia: ");
+        String motivo = scanner.nextLine();
+        Transferencia transferencia = new Transferencia(cuentaOrigen, cuentaDestino, monto, motivo);
+        cliente.transferir(cuentaOrigen, cuentaDestino, monto, motivo);
+
+        cuentaOrigen.guardarTrasferenciaRecibida(transferencia);
+        cuentaDestino.guardarTrasferenciaRecibida(transferencia);
+    }
+
     /**
      * El cliente retira efecto de alguna de sus cuentas en pesos
      */
@@ -65,7 +90,7 @@ public class MenuClientes {
         System.out.print("Ingrese el monto a retirar: ");
         int montoSolicitado;
         try {
-            montoSolicitado = Integer.parseInt(this.scanner.nextLine());
+            montoSolicitado = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException ex) {
             throw new FormatoMontoIncorrectoEx();
         }
@@ -86,7 +111,7 @@ public class MenuClientes {
         int montoDolarSolicitado;
         try {
             System.out.print("Ingrese el monto de dolares que quiere comprar: ");
-            montoDolarSolicitado = Integer.parseInt(this.scanner.nextLine());
+            montoDolarSolicitado = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException ex) {
             throw new FormatoMontoIncorrectoEx();
         }
@@ -111,7 +136,7 @@ public class MenuClientes {
         int monto;
         try {
             System.out.print("Ingrese el monto a depositar: ");
-            monto = Integer.parseInt(this.scanner.nextLine());
+            monto = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException ex) {
             throw new FormatoMontoIncorrectoEx();
         }
@@ -128,7 +153,7 @@ public class MenuClientes {
             System.out.print("Ingrese su opcion: ");
             int opcion;
             try {
-                opcion = Integer.parseInt(this.scanner.nextLine());
+                opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException ex) {
                 System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
                 continue;
@@ -156,7 +181,7 @@ public class MenuClientes {
             System.out.print("Ingrese su opcion: ");
             int opcion;
             try {
-                opcion = Integer.parseInt(this.scanner.nextLine());
+                opcion = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException ex) {
                 System.out.println("[ERROR] Opcion incorrecta. Intente nuevamente...");
                 continue;
@@ -170,5 +195,19 @@ public class MenuClientes {
                     System.out.println("[ERROR] La opcion ingresada es incorrecta...");
             }
         }
+    }
+
+    private double solicitarMonto() throws FormatoExcepciones, BancoExcepciones {
+        System.out.print("Ingrese el monto: ");
+        double monto;
+        try {
+            monto = Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new FormatoMontoIncorrectoEx();
+        }
+        if (monto <= 0) {
+            throw new MontoIncorrectoEx();
+        }
+        return monto;
     }
 }

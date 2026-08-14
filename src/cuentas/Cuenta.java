@@ -10,20 +10,17 @@ public class Cuenta {
     private double saldo;
     private String tipo;
     private String alias;
-    private List<Transferencia> transHechas;
-    private List<Transferencia> transRecibidas;
+    private final List<Transferencia> transferenciasHechas;
+    private final List<Transferencia> transferenciasRecibidas;
 
     public Cuenta(String alias) {
         this.alias = alias;
-        this.transHechas = new ArrayList<>();
-        this.transRecibidas = new ArrayList<>();
+        this.transferenciasHechas = new ArrayList<>();
+        this.transferenciasRecibidas = new ArrayList<>();
     }
 
     /**
      * Incrementa el saldo de la cuenta
-     *
-     * @param monto
-     * @throws BancoExcepciones
      */
     public void aumentarSaldo(double monto) throws BancoExcepciones {
         if (monto <= 0) {
@@ -34,9 +31,6 @@ public class Cuenta {
 
     /**
      * Disminuye el saldo de la cuenta
-     *
-     * @param monto
-     * @throws BancoExcepciones
      */
     public void disminuirSaldo(double monto) throws BancoExcepciones {
         if (monto <= 0) {
@@ -49,23 +43,17 @@ public class Cuenta {
 
     /**
      * Muesta el tipo y alias de una cuentas
-     *
-     * @return
      */
     public String mostrarDatosCuenta() {
         return this.tipo + "," + this.alias;
     }
 
-    public void cargarTransferenciaHecha(Transferencia transferencia) {
-        this.transHechas.add(transferencia);
+    public void guardarTransferenciaHecha(Transferencia transferencia) {
+        this.transferenciasHechas.add(transferencia);
     }
 
-    public void recibirTrasferencia(Transferencia transferencia) {
-        this.transRecibidas.add(transferencia);
-    }
-
-    public void setSaldo(int monto) {
-        this.saldo = monto;
+    public void guardarTrasferenciaRecibida(Transferencia transferencia) {
+        this.transferenciasRecibidas.add(transferencia);
     }
 
     public double getSaldo() {
@@ -84,8 +72,5 @@ public class Cuenta {
         this.tipo = tipo;
     }
 
-    public String getTipo() {
-        return this.tipo;
-    }
 
 }

@@ -5,9 +5,9 @@ public class Transferencia {
     private String aliasEmisor, aliasDestino, motivo;
     private double monto;
 
-    public Transferencia(String aliasEmisor, String aliasDestino, double monto, String motivo) {
-        this.aliasEmisor = aliasEmisor;
-        this.aliasDestino = aliasDestino;
+    public Transferencia(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, String motivo) {
+        this.aliasEmisor = cuentaOrigen.getAlias();
+        this.aliasDestino = cuentaDestino.getAlias();
         this.monto = monto;
         this.motivo = motivo;
     }

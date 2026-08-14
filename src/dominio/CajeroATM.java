@@ -60,9 +60,9 @@ public class CajeroATM {
      */
     private void ingresarComoCliente() throws FormatoExcepciones, BancoExcepciones {
         String dni = pedirDni();
-        Cliente cliente = banco.buscarCliente(dni);
+        Cliente cliente = banco.buscarClientePorDni(dni);
         System.out.println("## BIENVENIDO/A " + cliente.getNombre().toUpperCase() + " ##");
-        new MenuClientes(cliente, dispensador, scanner).ejecutar();
+        new MenuClientes(banco, cliente, dispensador, scanner).ejecutar();
     }
 
     /**

@@ -1,6 +1,11 @@
 package dominio;
 
-public class VerificadorDatosInput {
+import excepciones.formato.DniFormatoIncorrectoEx;
+import excepciones.formato.FormatoExcepciones;
+
+import java.util.Scanner;
+
+public class UtilidadesInput {
 
     /**
      * Verifica si el formato de los nombres y apellidos ingresados es correcto
@@ -23,5 +28,17 @@ public class VerificadorDatosInput {
      */
     public static boolean aliasCorrecto(String alias) {
         return alias.matches("^[a-zA-Z]+\\.[a-zA-Z]+\\.[a-zA-Z]+$") && alias.length() <= 20;
+    }
+
+    /**
+     * Se solicita el DNI al cliente
+     */
+    public static String pedirDni(Scanner scanner) throws FormatoExcepciones {
+        System.out.print("Ingrese el DNI: ");
+        String dni = scanner.nextLine();
+        if (!dniCorrecto(dni)) {
+            throw new DniFormatoIncorrectoEx();
+        }
+        return dni;
     }
 }

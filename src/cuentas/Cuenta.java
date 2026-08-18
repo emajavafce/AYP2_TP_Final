@@ -44,7 +44,7 @@ public class Cuenta {
     /**
      * Muesta el tipo y alias de una cuentas
      */
-    public String mostrarDatosCuenta() {
+    public String toString() {
         return this.tipo + "," + this.alias;
     }
 
@@ -71,6 +71,5 @@ public class Cuenta {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
-
 
 }

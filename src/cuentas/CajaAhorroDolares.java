@@ -8,7 +8,7 @@ public class CajaAhorroDolares extends Cuenta {
     }
 
     @Override
-    public String mostrarDatosCuenta() {
-        return super.mostrarDatosCuenta() + ",U$D" + this.getSaldo();
+    public String toString() {
+        return super.toString() + ",U$D" + this.getSaldo();
     }
 }

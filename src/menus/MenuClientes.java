@@ -8,18 +8,15 @@ import excepciones.formato.*;
 
 import java.util.Scanner;
 
-public class MenuClientes {
+public class MenuClientes extends Menu{
 
-    private final Banco banco;
     private final Cliente cliente;
     private final DispensadorDinero dispensador;
-    private final Scanner scanner;
 
     public MenuClientes(Banco banco, Cliente cliente, DispensadorDinero dispensador, Scanner scanner) {
-        this.banco = banco;
+        super(banco, scanner);
         this.cliente = cliente;
         this.dispensador = dispensador;
-        this.scanner = scanner;
     }
 
     public void ejecutar() throws FormatoExcepciones, BancoExcepciones {
@@ -64,7 +61,7 @@ public class MenuClientes {
     private void transferir() throws FormatoExcepciones, BancoExcepciones {
         System.out.print("Ingrese el alias de la cuenta a la que va transferir: ");
         String aliasDestino = scanner.nextLine();
-        if (VerificadorDatosInput.aliasCorrecto(aliasDestino)) {
+        if (UtilidadesInput.aliasCorrecto(aliasDestino)) {
             throw new AliasIncorrectoEx();
         }
         if (!banco.aliasEnUso(aliasDestino)) {
@@ -77,7 +74,6 @@ public class MenuClientes {
         String motivo = scanner.nextLine();
         Transferencia transferencia = new Transferencia(cuentaOrigen, cuentaDestino, monto, motivo);
         cliente.transferir(cuentaOrigen, cuentaDestino, monto, motivo);
-
         cuentaOrigen.guardarTrasferenciaRecibida(transferencia);
         cuentaDestino.guardarTrasferenciaRecibida(transferencia);
     }

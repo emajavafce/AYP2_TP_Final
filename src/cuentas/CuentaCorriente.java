@@ -10,7 +10,7 @@ public class CuentaCorriente extends Cuenta {
     }
 
     @Override
-    public String mostrarDatosCuenta() {
-        return super.mostrarDatosCuenta() + ",$" + this.getSaldo() + ",$" + CuentaCorriente.MONTO_DESCUBIERTO;
+    public String toString() {
+        return super.toString() + ",$" + this.getSaldo() + ",$" + CuentaCorriente.MONTO_DESCUBIERTO;
     }
 }

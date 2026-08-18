@@ -20,7 +20,7 @@ public class Cliente {
         this.cajaAhorroDolares = new CajaAhorroDolares(banco.generarAlias());
     }
 
-    public String getDatosPersonales() {
+    public String datosPersonales() {
         return String.format("Nombre: %s - Apellido: %s - DNI: %s - Edad: %d años", this.nombre, this.apellido, this.dni, this.edad);
     }
 
@@ -39,35 +39,33 @@ public class Cliente {
 
     public void transferir(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, String motivo) {
         Transferencia transferencia = new Transferencia(cuentaOrigen, cuentaDestino, monto, motivo);
-        cuentaOrigen.cargarTransferenciaHecha(transferencia);
-        cuentaDestino.cargarTrasferenciaRecibida(transferencia);
+        cuentaOrigen.guardarTransferenciaHecha(transferencia);
+        cuentaDestino.guardarTrasferenciaRecibida(transferencia);
     }
 
     public void recibirTransferencia(Cuenta cuentaDestino, Transferencia transferencia) throws BancoExcepciones {
         double montoRecibido = transferencia.getMonto();
         cuentaDestino.aumentarSaldo(montoRecibido);
-        cuentaDestino.cargarTrasferenciaRecibida(transferencia);
+        cuentaDestino.guardarTrasferenciaRecibida(transferencia);
     }
 
     private Cuenta obtenerCuenta(TipoCuenta tipo) {
         return switch (tipo) {
-            case CUENTA_01 -> this.cuentaCorriente;
-            case CUENTA_02 -> this.cajaAhorroPesos;
-            case CUENTA_03 -> this.cajaAhorroDolares;
+            case CUENTA_01 -> cuentaCorriente;
+            case CUENTA_02 -> cajaAhorroPesos;
+            case CUENTA_03 -> cajaAhorroDolares;
         };
     }
 
     public void mostrarEstadoDeCuentas() {
         System.out.println("Estado de cuentas:");
-        System.out.println("\t" + this.cuentaCorriente.mostrarDatosCuenta());
-        System.out.println("\t" + this.cajaAhorroPesos.mostrarDatosCuenta());
-        System.out.println("\t" + this.cajaAhorroDolares.mostrarDatosCuenta());
+        System.out.println("\t" + cuentaCorriente);
+        System.out.println("\t" + cajaAhorroPesos);
+        System.out.println("\t" + cajaAhorroDolares);
     }
 
     /**
      * Se obtienen los alias de cada cuenta del cliente
-     *
-     * @return
      */
     public String[] getTodosLosAlias() {
         return new String[]{this.cuentaCorriente.getAlias(), this.cajaAhorroPesos.getAlias(), this.cajaAhorroDolares.getAlias()};
@@ -75,7 +73,6 @@ public class Cliente {
 
     /**
      * Se obtienen todos los alias que tiene el cliente segun cada cuenta
-     * @return
      */
     public String[] getAliasCuentas() {
         return new String[]{cuentaCorriente.getAlias(), cajaAhorroPesos.getAlias(), cajaAhorroDolares.getAlias()};
